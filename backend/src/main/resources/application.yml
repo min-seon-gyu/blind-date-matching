@@ -1,0 +1,15 @@
+spring:
+  profiles:
+    active: local
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        format_sql: true
+    open-in-view: false
+  jackson:
+    property-naming-strategy: SNAKE_CASE
+
+server:
+  port: 8080

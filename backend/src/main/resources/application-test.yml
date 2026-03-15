@@ -1,0 +1,25 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    database-platform: org.hibernate.dialect.H2Dialect
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+jwt:
+  secret: test-secret-key-must-be-at-least-256-bits-long-for-hs256-algorithm
+  access-token-expiry: 1800000
+  refresh-token-expiry: 1209600000
+
+kakao:
+  client-id: test-client-id
+  redirect-uri: http://localhost:5173/auth/kakao/callback
+
+toss:
+  secret-key: test-secret-key
+  base-url: https://api.tosspayments.com

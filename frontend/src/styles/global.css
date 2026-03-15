@@ -1,0 +1,31 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Noto Sans KR', sans-serif;
+  background: #fafafa;
+  color: #333;
+  max-width: 430px;
+  margin: 0 auto;
+  min-height: 100vh;
+}
+
+:root {
+  --primary: #ff6b8a;
+  --primary-dark: #ff4d73;
+  --secondary: #ff8e53;
+  --gradient: linear-gradient(135deg, #ff6b8a 0%, #ff8e53 100%);
+  --admin-gradient: linear-gradient(135deg, #6366f1, #8b5cf6);
+  --bg: #fafafa;
+  --card-bg: #ffffff;
+  --text: #333333;
+  --text-light: #999999;
+  --border: #f0f0f0;
+  --radius: 14px;
+  --shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
