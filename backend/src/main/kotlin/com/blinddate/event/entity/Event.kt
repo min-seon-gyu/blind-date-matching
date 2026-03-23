@@ -1,7 +1,8 @@
 package com.blinddate.event.entity
 
-import com.blinddate.bar.entity.Bar
+import com.blinddate.cafe.entity.Cafe
 import com.blinddate.common.entity.BaseEntity
+import com.blinddate.organizer.entity.Organizer
 import jakarta.persistence.*
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -11,8 +12,12 @@ import java.time.LocalTime
 @Table(name = "event")
 class Event(
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "bar_id", nullable = false)
-    val bar: Bar,
+    @JoinColumn(name = "cafe_id", nullable = false)
+    val cafe: Cafe,
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "organizer_id", nullable = false)
+    val organizer: Organizer,
 
     @Column(nullable = false) var title: String,
     @Column(nullable = false) var date: LocalDate,
