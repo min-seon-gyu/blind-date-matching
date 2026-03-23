@@ -21,7 +21,7 @@ class BarOwnerAuthService(
             throw UnauthorizedException("이메일 또는 비밀번호가 올바르지 않습니다")
         }
         return TokenResponse(
-            accessToken = jwtTokenProvider.createAccessToken(owner.id, UserType.BAR_OWNER, barId = owner.bar.id),
+            accessToken = jwtTokenProvider.createAccessToken(owner.id, UserType.BAR_OWNER, cafeId = owner.bar.id),
             refreshToken = jwtTokenProvider.createRefreshToken(owner.id, UserType.BAR_OWNER)
         )
     }

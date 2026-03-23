@@ -11,21 +11,21 @@ import org.springframework.web.bind.annotation.*
 class BarOwnerEventController(private val service: BarOwnerService) {
 
     @GetMapping
-    fun getEvents(@AuthenticationPrincipal principal: UserPrincipal) = service.getMyEvents(principal.barId!!)
+    fun getEvents(@AuthenticationPrincipal principal: UserPrincipal) = service.getMyEvents(principal.cafeId!!)
 
     @PostMapping
     fun createEvent(@AuthenticationPrincipal principal: UserPrincipal, @RequestBody request: EventCreateRequest) =
-        service.createEvent(principal.barId!!, request)
+        service.createEvent(principal.cafeId!!, request)
 
     @PutMapping("/{id}")
     fun updateEvent(@AuthenticationPrincipal principal: UserPrincipal, @PathVariable id: Long, @RequestBody request: EventCreateRequest) =
-        service.updateEvent(principal.barId!!, id, request)
+        service.updateEvent(principal.cafeId!!, id, request)
 
     @DeleteMapping("/{id}")
     fun deleteEvent(@AuthenticationPrincipal principal: UserPrincipal, @PathVariable id: Long) =
-        service.deleteEvent(principal.barId!!, id)
+        service.deleteEvent(principal.cafeId!!, id)
 
     @PutMapping("/{id}/close")
     fun closeEvent(@AuthenticationPrincipal principal: UserPrincipal, @PathVariable id: Long) =
-        service.closeEvent(principal.barId!!, id)
+        service.closeEvent(principal.cafeId!!, id)
 }

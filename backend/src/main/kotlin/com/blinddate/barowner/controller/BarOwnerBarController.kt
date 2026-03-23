@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.*
 class BarOwnerBarController(private val service: BarOwnerService) {
 
     @GetMapping("/my-bar")
-    fun getMyBar(@AuthenticationPrincipal principal: UserPrincipal) = service.getMyBar(principal.barId!!)
+    fun getMyBar(@AuthenticationPrincipal principal: UserPrincipal) = service.getMyBar(principal.cafeId!!)
 
     @PutMapping("/my-bar")
     fun updateMyBar(@AuthenticationPrincipal principal: UserPrincipal, @RequestBody request: BarUpdateRequest) =
-        service.updateMyBar(principal.barId!!, request)
+        service.updateMyBar(principal.cafeId!!, request)
 }

@@ -28,10 +28,16 @@ class SecurityConfig(private val jwtAuthenticationFilter: JwtAuthenticationFilte
             .authorizeHttpRequests {
                 it
                     .requestMatchers("/api/auth/**").permitAll()
+                    .requestMatchers("/api/organizer/auth/**").permitAll()
+                    .requestMatchers("/api/cafe-owner/auth/**").permitAll()
                     .requestMatchers("/api/bar-owner/auth/**").permitAll()
                     .requestMatchers("/api/admin/auth/**").permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/bars/**").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/api/cafes/**").permitAll()
                     .requestMatchers("/api/actions/**").permitAll()
+                    .requestMatchers("/api/marketplace/**").hasAnyRole("ORGANIZER", "CAFE_OWNER")
+                    .requestMatchers("/api/organizer/**").hasRole("ORGANIZER")
+                    .requestMatchers("/api/cafe-owner/**").hasRole("CAFE_OWNER")
                     .requestMatchers("/api/bar-owner/**").hasRole("BAR_OWNER")
                     .requestMatchers("/api/admin/**").hasRole("PLATFORM_ADMIN")
                     .anyRequest().authenticated()
