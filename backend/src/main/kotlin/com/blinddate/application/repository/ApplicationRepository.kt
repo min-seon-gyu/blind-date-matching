@@ -6,8 +6,9 @@ import org.springframework.data.jpa.repository.JpaRepository
 import java.util.Optional
 
 interface ApplicationRepository : JpaRepository<Application, Long> {
-    fun findByMemberIdAndEventId(memberId: Long, eventId: Long): Optional<Application>
-    fun findByMemberId(memberId: Long): List<Application>
+    fun findByParticipantIdAndEventId(participantId: Long, eventId: Long): Optional<Application>
+    fun findByParticipantId(participantId: Long): List<Application>
     fun findByEventId(eventId: Long): List<Application>
     fun findByEventIdAndStatus(eventId: Long, status: ApplicationStatus): List<Application>
+    fun countByEventIdAndStatus(eventId: Long, status: ApplicationStatus): Long
 }

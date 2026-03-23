@@ -1,19 +1,20 @@
 package com.blinddate.matching.dto
 
-data class ParticipantNumberResponse(
-    val memberId: Long,
+data class ParticipantInfoResponse(
+    val participantId: Long,
     val number: Int,
-    val gender: String
+    val gender: String,
+    val age: Int,
+    val job: String,
+    val introduction: String
 )
 
-data class SubmitChoicesRequest(
-    val chosenMemberIds: List<Long>
-)
+data class ChoiceRequest(val chosenParticipantIds: List<Long>)
 
 data class MatchResultResponse(
     val matchResultId: Long,
     val eventId: Long,
-    val matchedMemberId: Long,
-    val matchedMemberNickname: String,
+    val matchedParticipantId: Long,
+    val matchedNickname: String,
     val notified: Boolean
 )

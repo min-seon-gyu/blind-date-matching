@@ -12,6 +12,4 @@ data class NotificationResponse(
     val createdAt: LocalDateTime
 )
 
-data class UnreadCountResponse(
-    val count: Long
-)
+data class UnreadCountResponse(val count: Long)

@@ -2,32 +2,16 @@ package com.blinddate.bar.entity
 
 import com.blinddate.common.entity.BaseEntity
 import jakarta.persistence.*
-import java.time.LocalTime
 
 @Entity
 @Table(name = "bar")
 class Bar(
-    @Column(nullable = false)
-    val name: String,
-
-    @Column(nullable = false)
-    val address: String,
-
-    @Column(nullable = false)
-    val totalSeats: Int,
-
-    @Column(nullable = false)
-    var currentMaleCount: Int = 0,
-
-    @Column(nullable = false)
-    var currentFemaleCount: Int = 0,
-
-    @Column(nullable = false)
-    var isOpen: Boolean = false,
-
-    @Column(nullable = false)
-    val openTime: LocalTime,
-
-    @Column(nullable = false)
-    val closeTime: LocalTime
+    @Column(nullable = false) var name: String,
+    @Column(nullable = false) var address: String,
+    @Column(columnDefinition = "TEXT") var description: String = "",
+    @Column var logoUrl: String = "",
+    @Column var coverImageUrl: String = "",
+    @Column(unique = true, nullable = false) val slug: String,
+    @Column(nullable = false) var commissionRate: Int = 10,
+    @Column(nullable = false) var isActive: Boolean = true
 ) : BaseEntity()

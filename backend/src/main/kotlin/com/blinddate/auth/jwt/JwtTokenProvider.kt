@@ -15,29 +15,47 @@ class JwtTokenProvider(
 ) {
     private val key: SecretKey by lazy { Keys.hmacShaKeyFor(secret.toByteArray()) }
 
-    fun createAccessToken(memberId: Long, role: String): String = createToken(memberId, role, accessTokenExpiry)
-    fun createRefreshToken(memberId: Long): String = createToken(memberId, null, refreshTokenExpiry)
+    fun createAccessToken(userId: Long, userType: UserType, barId: Long? = null): String =
+        buildToken(userId, userType, barId, accessTokenExpiry, "access")
 
-    private fun createToken(memberId: Long, role: String?, expiry: Long): String {
-        val now = Date()
-        val builder = Jwts.builder()
-            .subject(memberId.toString())
-            .issuedAt(now)
-            .expiration(Date(now.time + expiry))
-        if (role != null) builder.claim("role", role)
-        return builder.signWith(key).compact()
-    }
+    fun createRefreshToken(userId: Long, userType: UserType): String =
+        buildToken(userId, userType, null, refreshTokenExpiry, "refresh")
 
     fun validateToken(token: String): Boolean = try {
-        Jwts.parser().verifyWith(key).build().parseSignedClaims(token); true
-    } catch (e: Exception) { false }
+        Jwts.parser().verifyWith(key).build().parseSignedClaims(token)
+        true
+    } catch (e: Exception) {
+        false
+    }
 
-    fun getMemberId(token: String): Long =
-        Jwts.parser().verifyWith(key).build().parseSignedClaims(token).payload.subject.toLong()
+    fun validateRefreshToken(token: String): Boolean =
+        validateToken(token) && getTokenType(token) == "refresh"
 
-    fun getRole(token: String): String? =
-        Jwts.parser().verifyWith(key).build().parseSignedClaims(token).payload["role"] as? String
+    fun getUserPrincipal(token: String): UserPrincipal {
+        val claims = Jwts.parser().verifyWith(key).build().parseSignedClaims(token).payload
+        return UserPrincipal(
+            id = claims.subject.toLong(),
+            userType = UserType.valueOf(claims["userType"] as String),
+            barId = (claims["barId"] as? Number)?.toLong()
+        )
+    }
 
-    fun getExpiration(token: String): Date =
-        Jwts.parser().verifyWith(key).build().parseSignedClaims(token).payload.expiration
+    private fun getTokenType(token: String): String {
+        val claims = Jwts.parser().verifyWith(key).build().parseSignedClaims(token).payload
+        return claims["tokenType"] as? String ?: "access"
+    }
+
+    private fun buildToken(userId: Long, userType: UserType, barId: Long?, expiry: Long, tokenType: String): String {
+        val now = Date()
+        val builder = Jwts.builder()
+            .subject(userId.toString())
+            .claim("userType", userType.name)
+            .claim("tokenType", tokenType)
+            .issuedAt(now)
+            .expiration(Date(now.time + expiry))
+            .signWith(key)
+
+        barId?.let { builder.claim("barId", it) }
+        return builder.compact()
+    }
 }

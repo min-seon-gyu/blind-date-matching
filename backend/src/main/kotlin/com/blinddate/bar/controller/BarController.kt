@@ -1,33 +1,15 @@
 package com.blinddate.bar.controller
-
-import com.blinddate.bar.dto.BarReservationResponse
-import com.blinddate.bar.dto.BarReserveRequest
-import com.blinddate.bar.dto.BarStatusResponse
 import com.blinddate.bar.service.BarService
-import org.springframework.http.ResponseEntity
-import org.springframework.security.core.context.SecurityContextHolder
+import com.blinddate.event.service.EventService
 import org.springframework.web.bind.annotation.*
-
 @RestController
-@RequestMapping("/api/bar")
-class BarController(private val barService: BarService) {
-
-    private fun currentMemberId(): Long = SecurityContextHolder.getContext().authentication.principal as Long
-
-    @GetMapping("/status")
-    fun getStatus(@RequestParam(defaultValue = "1") barId: Long): ResponseEntity<BarStatusResponse> =
-        ResponseEntity.ok(barService.getStatus(barId))
-
-    @PostMapping("/reservations")
-    fun reserve(
-        @RequestParam(defaultValue = "1") barId: Long,
-        @RequestBody request: BarReserveRequest
-    ): ResponseEntity<BarReservationResponse> =
-        ResponseEntity.ok(barService.reserve(currentMemberId(), barId, request))
-
-    @DeleteMapping("/reservations/{id}")
-    fun cancelReservation(@PathVariable id: Long): ResponseEntity<Void> {
-        barService.cancelReservation(currentMemberId(), id)
-        return ResponseEntity.noContent().build()
-    }
+@RequestMapping("/api/bars")
+class BarController(private val barService: BarService, private val eventService: EventService) {
+    @GetMapping("/{slug}")
+    fun getBar(@PathVariable slug: String) = barService.getBySlug(slug)
+    @GetMapping("/{slug}/events")
+    fun getEvents(@PathVariable slug: String) = eventService.getEventsByBar(slug)
+    @GetMapping("/{slug}/events/{eventId}")
+    fun getEvent(@PathVariable slug: String, @PathVariable eventId: Long) =
+        eventService.getEventByBarSlugAndId(slug, eventId)
 }

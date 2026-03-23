@@ -1,27 +1,25 @@
 package com.blinddate.application.controller
 
-import com.blinddate.application.dto.ApplicationResponse
 import com.blinddate.application.service.ApplicationService
-import org.springframework.http.ResponseEntity
-import org.springframework.security.core.context.SecurityContextHolder
+import com.blinddate.auth.jwt.UserPrincipal
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
 
 @RestController
-class ApplicationController(private val applicationService: ApplicationService) {
+class ApplicationController(private val service: ApplicationService) {
 
-    private fun currentMemberId(): Long = SecurityContextHolder.getContext().authentication.principal as Long
+    @PostMapping("/api/events/{eventId}/apply")
+    fun apply(@AuthenticationPrincipal principal: UserPrincipal, @PathVariable eventId: Long) =
+        service.apply(principal.id, eventId)
 
-    @PostMapping("/api/events/{id}/apply")
-    fun apply(@PathVariable id: Long): ResponseEntity<ApplicationResponse> =
-        ResponseEntity.ok(applicationService.apply(currentMemberId(), id))
-
-    @DeleteMapping("/api/applications/{id}")
-    fun cancel(@PathVariable id: Long): ResponseEntity<Void> {
-        applicationService.cancel(currentMemberId(), id)
-        return ResponseEntity.noContent().build()
+    @DeleteMapping("/api/events/{eventId}/apply")
+    fun cancel(@AuthenticationPrincipal principal: UserPrincipal, @PathVariable eventId: Long) {
+        val apps = service.getMyApplications(principal.id)
+        val app = apps.find { it.eventId == eventId } ?: throw com.blinddate.common.exception.NotFoundException("신청 내역을 찾을 수 없습니다")
+        service.cancel(principal.id, app.id)
     }
 
-    @GetMapping("/api/members/me/applications")
-    fun getMyApplications(): ResponseEntity<List<ApplicationResponse>> =
-        ResponseEntity.ok(applicationService.getMyApplications(currentMemberId()))
+    @GetMapping("/api/me/applications")
+    fun getMyApplications(@AuthenticationPrincipal principal: UserPrincipal) =
+        service.getMyApplications(principal.id)
 }

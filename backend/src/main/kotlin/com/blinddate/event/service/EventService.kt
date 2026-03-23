@@ -1,22 +1,23 @@
 package com.blinddate.event.service
 
+import com.blinddate.bar.repository.BarRepository
 import com.blinddate.common.exception.NotFoundException
 import com.blinddate.event.dto.*
-import com.blinddate.event.entity.BlindDateEvent
-import com.blinddate.event.repository.BlindDateEventRepository
-import com.blinddate.member.repository.MemberRepository
+import com.blinddate.event.entity.Event
+import com.blinddate.event.repository.EventRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.time.LocalDateTime
 
 @Service
 @Transactional(readOnly = true)
 class EventService(
-    private val eventRepository: BlindDateEventRepository,
-    private val memberRepository: MemberRepository
+    private val eventRepository: EventRepository,
+    private val barRepository: BarRepository
 ) {
-    fun getEventsByMonth(year: Int, month: Int): List<EventResponse> =
-        eventRepository.findByYearAndMonth(year, month).map { it.toResponse() }
+    fun getEventsByBar(slug: String): List<EventResponse> {
+        val bar = barRepository.findBySlug(slug).orElseThrow { NotFoundException("바를 찾을 수 없습니다") }
+        return eventRepository.findByBarIdAndDeletedAtIsNullOrderByDateAsc(bar.id).map { it.toResponse() }
+    }
 
     fun getEvent(eventId: Long): EventResponse {
         val event = eventRepository.findById(eventId).orElseThrow { NotFoundException("이벤트를 찾을 수 없습니다") }
@@ -24,40 +25,16 @@ class EventService(
         return event.toResponse()
     }
 
-    @Transactional
-    fun createEvent(adminId: Long, request: EventCreateRequest): EventResponse {
-        val admin = memberRepository.findById(adminId).orElseThrow { NotFoundException("관리자를 찾을 수 없습니다") }
-        return eventRepository.save(BlindDateEvent(
-            title = request.title, date = request.date, time = request.time,
-            maleCapacity = request.maleCapacity, femaleCapacity = request.femaleCapacity,
-            price = request.price, description = request.description,
-            choiceDeadline = request.choiceDeadline, matchNotificationTime = request.matchNotificationTime,
-            minAge = request.minAge, maxAge = request.maxAge, createdBy = admin
-        )).toResponse()
-    }
-
-    @Transactional
-    fun updateEvent(eventId: Long, request: EventCreateRequest): EventResponse {
+    fun getEventByBarSlugAndId(slug: String, eventId: Long): EventResponse {
+        val bar = barRepository.findBySlug(slug).orElseThrow { NotFoundException("바를 찾을 수 없습니다") }
         val event = eventRepository.findById(eventId).orElseThrow { NotFoundException("이벤트를 찾을 수 없습니다") }
-        event.apply {
-            title = request.title; date = request.date; time = request.time
-            maleCapacity = request.maleCapacity; femaleCapacity = request.femaleCapacity
-            price = request.price; description = request.description
-            choiceDeadline = request.choiceDeadline; matchNotificationTime = request.matchNotificationTime
-            minAge = request.minAge; maxAge = request.maxAge
-        }
+        if (event.isDeleted() || event.bar.slug != bar.slug) throw NotFoundException("이벤트를 찾을 수 없습니다")
         return event.toResponse()
     }
 
-    @Transactional
-    fun deleteEvent(eventId: Long) {
-        val event = eventRepository.findById(eventId).orElseThrow { NotFoundException("이벤트를 찾을 수 없습니다") }
-        event.deletedAt = LocalDateTime.now()
-    }
-
-    private fun BlindDateEvent.toResponse() = EventResponse(
-        id, title, date, time, maleCapacity, femaleCapacity,
+    fun Event.toResponse() = EventResponse(
+        id, bar.id, title, date, time, maleCapacity, femaleCapacity,
         currentMaleCount, currentFemaleCount, price, status, description,
-        choiceDeadline, matchNotificationTime, minAge, maxAge
+        choiceDeadline, matchNotificationTime, minAge, maxAge, maxChoices, matchingMode
     )
 }

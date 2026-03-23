@@ -3,161 +3,104 @@ package com.blinddate.matching.service
 import com.blinddate.application.entity.Application
 import com.blinddate.application.entity.ApplicationStatus
 import com.blinddate.application.repository.ApplicationRepository
-import com.blinddate.common.entity.BaseEntity
+import com.blinddate.bar.entity.Bar
 import com.blinddate.common.exception.BadRequestException
-import com.blinddate.event.entity.BlindDateEvent
-import com.blinddate.event.repository.BlindDateEventRepository
+import com.blinddate.event.entity.Event
+import com.blinddate.event.entity.EventStatus
+import com.blinddate.event.repository.EventRepository
 import com.blinddate.matching.entity.Choice
 import com.blinddate.matching.entity.MatchResult
 import com.blinddate.matching.entity.ParticipantNumber
 import com.blinddate.matching.repository.ChoiceRepository
 import com.blinddate.matching.repository.MatchResultRepository
 import com.blinddate.matching.repository.ParticipantNumberRepository
-import com.blinddate.member.entity.Gender
-import com.blinddate.member.entity.Member
-import com.blinddate.member.entity.MemberProfile
-import com.blinddate.member.repository.MemberProfileRepository
-import com.blinddate.member.repository.MemberRepository
+import com.blinddate.participant.entity.Gender
+import com.blinddate.participant.entity.Participant
+import com.blinddate.participant.entity.ParticipantProfile
+import com.blinddate.participant.repository.ParticipantProfileRepository
+import com.blinddate.participant.repository.ParticipantRepository
 import io.mockk.*
 import org.junit.jupiter.api.Assertions.*
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.LocalTime
 import java.util.Optional
 
 class MatchingServiceTest {
+    private val participantNumberRepo = mockk<ParticipantNumberRepository>()
+    private val choiceRepo = mockk<ChoiceRepository>()
+    private val matchResultRepo = mockk<MatchResultRepository>()
+    private val eventRepo = mockk<EventRepository>()
+    private val participantRepo = mockk<ParticipantRepository>()
+    private val profileRepo = mockk<ParticipantProfileRepository>()
+    private val applicationRepo = mockk<ApplicationRepository>()
 
-    private lateinit var matchingService: MatchingService
-    private lateinit var participantNumberService: ParticipantNumberService
+    private val service = MatchingService(
+        participantNumberRepo, choiceRepo, matchResultRepo,
+        eventRepo, participantRepo, profileRepo, applicationRepo
+    )
 
-    private val participantNumberRepository = mockk<ParticipantNumberRepository>()
-    private val choiceRepository = mockk<ChoiceRepository>()
-    private val matchResultRepository = mockk<MatchResultRepository>()
-    private val eventRepository = mockk<BlindDateEventRepository>()
-    private val memberRepository = mockk<MemberRepository>()
-    private val memberProfileRepository = mockk<MemberProfileRepository>()
-    private val applicationRepository = mockk<ApplicationRepository>()
+    private val bar = Bar(name = "Test", address = "addr", slug = "test")
+    private val event = Event(bar = bar, title = "Friday", date = LocalDate.of(2026, 4, 3),
+        time = LocalTime.of(19, 0), price = 30000, maleCapacity = 10, femaleCapacity = 10,
+        maxChoices = 3, choiceDeadline = LocalDateTime.of(2026, 4, 3, 21, 0))
 
-    @BeforeEach
-    fun setUp() {
-        matchingService = MatchingService(
-            participantNumberRepository,
-            choiceRepository,
-            matchResultRepository,
-            eventRepository,
-            memberRepository,
-            memberProfileRepository,
-            applicationRepository
+    private val male1 = Participant(kakaoId = "m1", nickname = "Male1")
+    private val male2 = Participant(kakaoId = "m2", nickname = "Male2")
+    private val female1 = Participant(kakaoId = "f1", nickname = "Female1")
+    private val female2 = Participant(kakaoId = "f2", nickname = "Female2")
+
+    @Test
+    fun `submitChoices should throw if exceeds maxChoices`() {
+        every { applicationRepo.findByParticipantIdAndEventId(any(), any()) } returns Optional.of(
+            Application(participant = male1, event = event, status = ApplicationStatus.APPROVED)
         )
-        participantNumberService = ParticipantNumberService(
-            participantNumberRepository,
-            eventRepository,
-            memberRepository
+        every { eventRepo.findById(any()) } returns Optional.of(event)
+        every { profileRepo.findByParticipantId(any()) } returns Optional.of(
+            ParticipantProfile(participant = male1, name = "M", age = 28, gender = Gender.MALE, job = "dev")
         )
-    }
 
-    private fun <T : BaseEntity> T.setId(id: Long): T {
-        val f = BaseEntity::class.java.getDeclaredField("id")
-        f.isAccessible = true
-        f.set(this, id)
-        return this
-    }
-
-    private fun createMember(id: Long, kakaoId: String = "kakao$id"): Member =
-        Member(kakaoId = kakaoId, nickname = "user$id").setId(id)
-
-    private fun createEvent(id: Long): BlindDateEvent = BlindDateEvent(
-        title = "테스트 이벤트",
-        date = LocalDate.of(2026, 5, 1),
-        time = LocalTime.of(19, 0),
-        maleCapacity = 5,
-        femaleCapacity = 5,
-        price = 30000,
-        createdBy = createMember(99L)
-    ).setId(id)
-
-    private fun createProfile(member: Member, gender: Gender): MemberProfile =
-        MemberProfile(
-            member = member,
-            name = "테스트",
-            age = 25,
-            gender = gender,
-            job = "개발자"
-        ).setId(member.id * 10)
-
-    @Test
-    fun `should assign participant numbers by gender`() {
-        val event = createEvent(1L)
-        val male1 = createMember(1L)
-        val male2 = createMember(2L)
-
-        every { eventRepository.findById(1L) } returns Optional.of(event)
-        every { memberRepository.findById(1L) } returns Optional.of(male1)
-        every { memberRepository.findById(2L) } returns Optional.of(male2)
-
-        // First male: max is null, so next = 1
-        every { participantNumberRepository.findMaxNumberByEventIdAndGender(1L, Gender.MALE) } returnsMany listOf(null, 1)
-        every { participantNumberRepository.save(any()) } answers {
-            val pn = firstArg<ParticipantNumber>()
-            pn.setId(pn.number.toLong())
-            pn
+        assertThrows(BadRequestException::class.java) {
+            service.submitChoices(event.id, male1.id, listOf(1L, 2L, 3L, 4L))
         }
-
-        val result1 = participantNumberService.assignNumber(1L, 1L, Gender.MALE)
-        val result2 = participantNumberService.assignNumber(1L, 2L, Gender.MALE)
-
-        assertEquals(1, result1.number)
-        assertEquals(2, result2.number)
-        assertEquals(Gender.MALE, result1.gender)
-        assertEquals(Gender.MALE, result2.gender)
     }
 
     @Test
-    fun `should submit choices and process bidirectional match`() {
-        val eventId = 1L
-        val event = createEvent(eventId)
-        val male = createMember(1L)
-        val female = createMember(2L)
-        val maleProfile = createProfile(male, Gender.MALE)
-        val femaleProfile = createProfile(female, Gender.FEMALE)
+    fun `processMatching should match bidirectional choices`() {
+        // male1 chose female1, female1 chose male1 -> match
+        // male1 chose female2, female2 did NOT choose male1 -> no match
+        val maleProfile = ParticipantProfile(participant = male1, name = "M", age = 28, gender = Gender.MALE, job = "dev")
+        val femaleProfile = ParticipantProfile(participant = female1, name = "F", age = 26, gender = Gender.FEMALE, job = "design")
 
-        val maleApplication = Application(member = male, event = event, status = ApplicationStatus.APPROVED).setId(1L)
+        val choices = listOf(
+            Choice(event = event, chooser = male1, chosen = female1),
+            Choice(event = event, chooser = male1, chosen = female2),
+            Choice(event = event, chooser = female1, chosen = male1)
+        )
 
-        // Setup for male submitting choices
-        every { applicationRepository.findByMemberIdAndEventId(1L, eventId) } returns Optional.of(maleApplication)
-        every { memberProfileRepository.findByMemberId(1L) } returns Optional.of(maleProfile)
-        every { memberProfileRepository.findByMemberId(2L) } returns Optional.of(femaleProfile)
-        every { eventRepository.findById(eventId) } returns Optional.of(event)
-        every { memberRepository.findById(1L) } returns Optional.of(male)
-        every { memberRepository.findById(2L) } returns Optional.of(female)
-        every { choiceRepository.saveAll(any<List<Choice>>()) } returns emptyList()
+        every { choiceRepo.findByEventId(event.id) } returns choices
+        every { profileRepo.findByParticipantId(male1.id) } returns Optional.of(maleProfile)
+        every { profileRepo.findByParticipantId(female1.id) } returns Optional.of(femaleProfile)
+        every { matchResultRepo.existsByEventIdAndMember1IdAndMember2Id(any(), any(), any()) } returns false
+        every { eventRepo.findById(event.id) } returns Optional.of(event)
+        every { participantRepo.findById(male1.id) } returns Optional.of(male1)
+        every { participantRepo.findById(female1.id) } returns Optional.of(female1)
+        every { matchResultRepo.save(any()) } answers { firstArg() }
 
-        matchingService.submitChoices(eventId, 1L, listOf(2L))
+        service.processMatching(event.id)
 
-        verify { choiceRepository.saveAll(any<List<Choice>>()) }
-
-        // Now set up for processMatching
-        val choiceMaleToFemale = Choice(event = event, chooser = male, chosen = female).setId(1L)
-        val choiceFemaleToMale = Choice(event = event, chooser = female, chosen = male).setId(2L)
-
-        every { choiceRepository.findByEventId(eventId) } returns listOf(choiceMaleToFemale, choiceFemaleToMale)
-        every { matchResultRepository.existsByEventIdAndMember1IdAndMember2Id(eventId, 1L, 2L) } returns false
-        every { matchResultRepository.save(any()) } answers { firstArg<MatchResult>().setId(1L) }
-
-        matchingService.processMatching(eventId)
-
-        verify { matchResultRepository.save(any()) }
+        // Should save exactly 1 match (male1 <-> female1)
+        verify(exactly = 1) { matchResultRepo.save(any()) }
     }
 
     @Test
-    fun `should reject more than 3 choices`() {
-        val eventId = 1L
-        val memberId = 1L
+    fun `getMatchResult should return matched partner`() {
+        val result = MatchResult(event = event, member1 = male1, member2 = female1)
+        every { matchResultRepo.findByEventIdAndParticipantId(event.id, male1.id) } returns listOf(result)
 
-        assertThrows<BadRequestException> {
-            matchingService.submitChoices(eventId, memberId, listOf(2L, 3L, 4L, 5L))
-        }
+        val response = service.getMatchResult(event.id, male1.id)
+        assertEquals(1, response.size)
+        assertEquals("Female1", response[0].matchedNickname)
     }
 }

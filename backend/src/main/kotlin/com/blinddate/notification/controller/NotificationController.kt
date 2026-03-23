@@ -1,42 +1,24 @@
 package com.blinddate.notification.controller
 
-import com.blinddate.notification.dto.NotificationResponse
-import com.blinddate.notification.dto.UnreadCountResponse
+import com.blinddate.auth.jwt.UserPrincipal
+import com.blinddate.notification.entity.RecipientType
 import com.blinddate.notification.service.NotificationService
-import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
-import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("/api/notifications")
-class NotificationController(
-    private val notificationService: NotificationService
-) {
+@RequestMapping("/api/me/notifications")
+class NotificationController(private val service: NotificationService) {
 
     @GetMapping
-    fun getNotifications(
-        @AuthenticationPrincipal userDetails: UserDetails
-    ): ResponseEntity<List<NotificationResponse>> {
-        val memberId = userDetails.username.toLong()
-        return ResponseEntity.ok(notificationService.getNotifications(memberId))
-    }
-
-    @PutMapping("/{id}/read")
-    fun markAsRead(
-        @PathVariable id: Long,
-        @AuthenticationPrincipal userDetails: UserDetails
-    ): ResponseEntity<Void> {
-        val memberId = userDetails.username.toLong()
-        notificationService.markAsRead(id, memberId)
-        return ResponseEntity.ok().build()
-    }
+    fun getNotifications(@AuthenticationPrincipal principal: UserPrincipal) =
+        service.getNotifications(RecipientType.PARTICIPANT, principal.id)
 
     @GetMapping("/unread-count")
-    fun getUnreadCount(
-        @AuthenticationPrincipal userDetails: UserDetails
-    ): ResponseEntity<UnreadCountResponse> {
-        val memberId = userDetails.username.toLong()
-        return ResponseEntity.ok(notificationService.getUnreadCount(memberId))
-    }
+    fun getUnreadCount(@AuthenticationPrincipal principal: UserPrincipal) =
+        service.getUnreadCount(RecipientType.PARTICIPANT, principal.id)
+
+    @PutMapping("/{id}/read")
+    fun markAsRead(@AuthenticationPrincipal principal: UserPrincipal, @PathVariable id: Long) =
+        service.markAsRead(id, RecipientType.PARTICIPANT, principal.id)
 }

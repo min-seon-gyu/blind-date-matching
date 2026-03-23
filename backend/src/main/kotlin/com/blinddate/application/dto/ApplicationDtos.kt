@@ -7,31 +7,12 @@ data class ApplicationResponse(
     val id: Long,
     val eventId: Long,
     val eventTitle: String,
-    val memberId: Long,
-    val memberNickname: String,
+    val participantId: Long,
+    val participantNickname: String,
     val status: ApplicationStatus,
     val appliedAt: LocalDateTime,
     val reviewedAt: LocalDateTime?,
     val rejectReason: String?
 )
 
-data class ApplicationDetailResponse(
-    val id: Long,
-    val eventId: Long,
-    val eventTitle: String,
-    val memberId: Long,
-    val memberNickname: String,
-    val memberName: String?,
-    val memberAge: Int?,
-    val memberGender: String?,
-    val memberJob: String?,
-    val memberPhotoUrl: String?,
-    val status: ApplicationStatus,
-    val appliedAt: LocalDateTime,
-    val reviewedAt: LocalDateTime?,
-    val rejectReason: String?
-)
-
-data class RejectRequest(
-    val reason: String = ""
-)
+data class RejectRequest(val reason: String)

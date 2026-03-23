@@ -21,6 +21,9 @@ jwt:
 kakao:
   client-id: ${KAKAO_CLIENT_ID:test}
   redirect-uri: http://localhost:5173/auth/kakao/callback
+  channel:
+    admin-key: ${KAKAO_CHANNEL_ADMIN_KEY:}
+    sender-key: ${KAKAO_CHANNEL_SENDER_KEY:}
 
 toss:
   secret-key: ${TOSS_SECRET_KEY:test}
