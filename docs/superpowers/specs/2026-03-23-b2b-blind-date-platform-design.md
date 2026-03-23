@@ -19,6 +19,7 @@
 - 바 사장님은 카카오톡 알림만으로 운영 가능해야 한다
 - 참가자는 바별 URL로 진입하여 웹에서 신청/선택/결과 확인
 - 모든 데이터는 Bar를 기준으로 격리
+- 참가자 계정은 플랫폼 레벨로 관리 (프로필 재사용 목적). 단, 바 사장님에게는 자기 바에 신청한 참가자 프로필만 노출됨
 
 ---
 
@@ -126,6 +127,11 @@ Event (이벤트)
  ├── status: EventStatus (OPEN/CLOSED/COMPLETED)
  └── deletedAt: LocalDateTime?
 
+ 정원 카운트 규칙:
+  - currentMaleCount/currentFemaleCount는 APPROVED 시 증가
+  - CANCELLED 또는 APPROVED 이후 REJECTED 시 감소
+  - PENDING/REJECTED(결제전) 상태 변경은 카운트에 영향 없음
+
 Application (신청)
  ├── participant: Participant (N:1)
  ├── event: Event (N:1)
@@ -157,24 +163,28 @@ MatchResult (매칭 결과)
 Commission (수수료)
  ├── bar: Bar (N:1)
  ├── event: Event (N:1)
- ├── participantCount: Int
- ├── unitPrice: Int                ← 인당 수수료 금액
+ ├── participantCount: Int         ← APPROVED 이상 상태의 참가자 수
+ ├── eventPrice: Int               ← 이벤트 참가비 (스냅샷)
+ ├── commissionRate: Int           ← 적용 수수료율 (스냅샷)
+ ├── unitPrice: Int                ← eventPrice * commissionRate / 100
  ├── totalAmount: Int              ← participantCount × unitPrice
  ├── status: CommissionStatus (PENDING/INVOICED/PAID)
  ├── invoicedAt: LocalDateTime?
  └── paidAt: LocalDateTime?
 
 ActionToken (카톡 액션용 일회용 토큰)
- ├── token: String (unique)
+ ├── token: String (unique)        ← UUID v4 (36자), 단일 사용 후 즉시 무효화 (atomic CAS)
  ├── actionType: String            ← APPROVE_APPLICATION, REJECT_APPLICATION 등
  ├── targetId: Long                ← 대상 엔티티 ID
  ├── barOwnerId: Long
  ├── used: Boolean (default false)
  └── expiresAt: LocalDateTime      ← 24시간 만료
+ 보안: /api/actions/ 엔드포인트에 IP 기반 rate limiting 적용 (분당 10회)
+       응답 페이지에 신청자 PII 미노출 (이름 마스킹: 홍*동)
 
 Notification (알림)
- ├── participant: Participant? (N:1)
- ├── barOwner: BarOwner? (N:1)
+ ├── recipientType: RecipientType (PARTICIPANT/BAR_OWNER)
+ ├── recipientId: Long             ← participant.id 또는 barOwner.id
  ├── type: NotificationType
  ├── title: String
  ├── message: String (TEXT)
@@ -194,7 +204,8 @@ DrinkingType: NONE, SOMETIMES, OFTEN
 SmokingType: NONE, SOMETIMES, OFTEN
 EventStatus: OPEN, CLOSED, COMPLETED
 ApplicationStatus: PENDING, APPROVED, REJECTED, CANCELLED, COMPLETED
-MatchingMode: BIDIRECTIONAL, UNIDIRECTIONAL
+MatchingMode: BIDIRECTIONAL
+ ※ BIDIRECTIONAL만 MVP에 포함. 향후 추가 모드는 Phase 2에서 검토
 CommissionStatus: PENDING, INVOICED, PAID
 NotificationType: NEW_APPLICATION, APPROVED, REJECTED, MATCH_RESULT,
                   EVENT_REMINDER, CHOICE_REMINDER, EVENT_COMPLETED, COMMISSION_INVOICE
@@ -211,6 +222,52 @@ NotificationType: NEW_APPLICATION, APPROVED, REJECTED, MATCH_RESULT,
 | 신규 Commission | 추가 | B2B 수수료 추적 핵심 |
 | 신규 ActionToken | 추가 | 카톡 버튼 액션 처리 |
 | Event에 bar, maxChoices, matchingMode | 추가 | 멀티테넌트 + 커스터마이징 |
+
+---
+
+## 이벤트 상태 머신
+
+```
+OPEN ──(choiceDeadline 도달, 스케줄러)──▶ CLOSED
+OPEN ──(바 사장님 수동 마감)──────────▶ CLOSED
+CLOSED ──(매칭 처리 + 알림 완료, 스케줄러)──▶ COMPLETED
+```
+
+- OPEN → CLOSED: `choiceDeadline` 도달 시 스케줄러가 자동 전환. 바 사장님이 수동으로 조기 마감도 가능
+- CLOSED → COMPLETED: 매칭 처리 + 결과 알림 발송 완료 후 자동 전환
+- 역방향 전환 불가 (CLOSED → OPEN 불가)
+
+### 참가번호 부여 시점
+
+- 이벤트 상태가 CLOSED로 전환될 때 스케줄러가 자동 부여
+- 대상: APPROVED 상태인 모든 참가자
+- 남녀 각각 1번부터 순차 번호 부여
+
+### 참가자 선택 시 표시 정보
+
+선택 페이지(`GET /api/events/{id}/participants`)에서 이성 참가자에게 보이는 정보:
+- 참가번호, 나이, 직업, 한줄 자기소개
+- 이름/사진/연락처는 비공개 (매칭 성사 후 닉네임만 공개)
+
+## JWT 인증 구조
+
+3개 사용자 유형을 단일 JWT 체계로 처리한다.
+
+JWT claims:
+```json
+{
+  "sub": "123",
+  "userType": "PARTICIPANT | BAR_OWNER | PLATFORM_ADMIN",
+  "barId": 456  // BAR_OWNER일 때만 포함
+}
+```
+
+- `JwtAuthenticationFilter`에서 `userType`에 따라 `SecurityContext`에 적절한 principal 설정
+- Security config에서 경로별 `userType` 검증:
+  - `/api/bar-owner/**` → BAR_OWNER만
+  - `/api/admin/**` → PLATFORM_ADMIN만
+  - `/api/me/**`, `/api/events/**` 등 → PARTICIPANT만
+  - `/api/bars/**` (GET), `/api/actions/**` → 인증 불필요
 
 ---
 
@@ -421,3 +478,26 @@ GET    /api/admin/dashboard                ← 통계 대시보드
 - 참가자 후기/평점
 - 반복 이벤트 (매주 자동 생성)
 - 참가자 간 채팅
+- 추가 매칭 모드 (UNIDIRECTIONAL 등)
+
+---
+
+## 보완 사항
+
+### BarOwner-Bar 관계
+- 1:1 관계. BarOwner는 하나의 Bar만 관리 (unique 제약)
+- 한 Bar에 여러 BarOwner는 Phase 2에서 검토
+
+### 알림 발송 한도
+- 카카오 채널 메시지 무료 1,000건/월. 초과 시 건당 15원
+- 초기 바 5곳 × 이벤트 4회/월 × 참가자 20명 = 약 400건 + 관리자 알림 → 무료 범위 내
+- 무료 한도 초과 시 유료 전환 (월 비용을 수수료 수익으로 커버)
+
+### 파일 업로드
+- 프로필 사진, 바 로고/커버: 프리사인드 URL 방식 S3 업로드
+- `POST /api/upload/presigned-url` → S3 presigned URL 반환 → 클라이언트가 직접 S3에 업로드
+- 제한: 이미지만, 최대 5MB
+
+### 페이지네이션
+- 목록 API는 커서 기반 페이지네이션 적용
+- 쿼리 파라미터: `?cursor={lastId}&size=20`
