@@ -3,7 +3,7 @@ package com.blinddate.matching.service
 import com.blinddate.application.entity.Application
 import com.blinddate.application.entity.ApplicationStatus
 import com.blinddate.application.repository.ApplicationRepository
-import com.blinddate.bar.entity.Bar
+import com.blinddate.cafe.entity.Cafe
 import com.blinddate.common.exception.BadRequestException
 import com.blinddate.event.entity.Event
 import com.blinddate.event.entity.EventStatus
@@ -14,6 +14,7 @@ import com.blinddate.matching.entity.ParticipantNumber
 import com.blinddate.matching.repository.ChoiceRepository
 import com.blinddate.matching.repository.MatchResultRepository
 import com.blinddate.matching.repository.ParticipantNumberRepository
+import com.blinddate.organizer.entity.Organizer
 import com.blinddate.participant.entity.Gender
 import com.blinddate.participant.entity.Participant
 import com.blinddate.participant.entity.ParticipantProfile
@@ -41,8 +42,9 @@ class MatchingServiceTest {
         eventRepo, participantRepo, profileRepo, applicationRepo
     )
 
-    private val bar = Bar(name = "Test", address = "addr", slug = "test")
-    private val event = Event(bar = bar, title = "Friday", date = LocalDate.of(2026, 4, 3),
+    private val cafe = Cafe(name = "Test", address = "addr", slug = "test")
+    private val organizer = Organizer(name = "Org", phoneNumber = "010", email = "org@test.com", password = "pass")
+    private val event = Event(cafe = cafe, organizer = organizer, title = "Friday", date = LocalDate.of(2026, 4, 3),
         time = LocalTime.of(19, 0), price = 30000, maleCapacity = 10, femaleCapacity = 10,
         maxChoices = 3, choiceDeadline = LocalDateTime.of(2026, 4, 3, 21, 0))
 
