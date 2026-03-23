@@ -50,9 +50,7 @@ services:
       SPRING_REDIS_PORT: 6379
       JWT_SECRET: local-dev-jwt-secret-key-change-in-production
       KAKAO_CLIENT_ID: your-kakao-client-id
-      KAKAO_CLIENT_SECRET: your-kakao-client-secret
-      TOSS_CLIENT_KEY: your-toss-client-key
-      TOSS_SECRET_KEY: your-toss-secret-key
+      KAKAO_CHANNEL_ADMIN_KEY:
 
   frontend:
     build:
