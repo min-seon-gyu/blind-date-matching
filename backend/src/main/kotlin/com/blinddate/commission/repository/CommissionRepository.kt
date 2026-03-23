@@ -1,0 +1,11 @@
+package com.blinddate.commission.repository
+
+import com.blinddate.commission.entity.Commission
+import com.blinddate.commission.entity.CommissionStatus
+import org.springframework.data.jpa.repository.JpaRepository
+
+interface CommissionRepository : JpaRepository<Commission, Long> {
+    fun findByBarId(barId: Long): List<Commission>
+    fun findByStatus(status: CommissionStatus): List<Commission>
+    fun existsByEventId(eventId: Long): Boolean
+}
