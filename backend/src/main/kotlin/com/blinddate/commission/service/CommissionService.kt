@@ -2,9 +2,11 @@ package com.blinddate.commission.service
 
 import com.blinddate.application.entity.ApplicationStatus
 import com.blinddate.application.repository.ApplicationRepository
+import com.blinddate.cafeowner.repository.CafeOwnerRepository
 import com.blinddate.commission.dto.CommissionResponse
 import com.blinddate.commission.entity.Commission
 import com.blinddate.commission.entity.CommissionStatus
+import com.blinddate.commission.entity.CommissionTargetType
 import com.blinddate.commission.repository.CommissionRepository
 import com.blinddate.common.exception.BadRequestException
 import com.blinddate.common.exception.NotFoundException
@@ -18,24 +20,44 @@ import java.time.LocalDateTime
 class CommissionService(
     private val commissionRepository: CommissionRepository,
     private val eventRepository: EventRepository,
-    private val applicationRepository: ApplicationRepository
+    private val applicationRepository: ApplicationRepository,
+    private val cafeOwnerRepository: CafeOwnerRepository
 ) {
     @Transactional
-    fun createForEvent(eventId: Long): CommissionResponse {
+    fun createForEvent(eventId: Long): List<CommissionResponse> {
         val event = eventRepository.findById(eventId).orElseThrow { NotFoundException("이벤트를 찾을 수 없습니다") }
         if (commissionRepository.existsByEventId(eventId)) throw BadRequestException("이미 수수료가 생성된 이벤트입니다")
 
         val participantCount = applicationRepository.countByEventIdAndStatus(eventId, ApplicationStatus.APPROVED).toInt()
-        val commissionRate = event.bar.commissionRate
-        val unitPrice = event.price * commissionRate / 100
-        val totalAmount = participantCount * unitPrice
+        val results = mutableListOf<CommissionResponse>()
 
-        val commission = commissionRepository.save(Commission(
-            bar = event.bar, event = event, participantCount = participantCount,
-            eventPrice = event.price, commissionRate = commissionRate,
-            unitPrice = unitPrice, totalAmount = totalAmount
+        // Organizer commission
+        val orgRate = event.organizer.commissionRate
+        val orgUnitPrice = event.price * orgRate / 100
+        val orgTotal = participantCount * orgUnitPrice
+        val orgCommission = commissionRepository.save(Commission(
+            cafe = event.cafe, event = event,
+            targetType = CommissionTargetType.ORGANIZER, targetId = event.organizer.id,
+            participantCount = participantCount, eventPrice = event.price,
+            commissionRate = orgRate, unitPrice = orgUnitPrice, totalAmount = orgTotal
         ))
-        return commission.toResponse()
+        results.add(orgCommission.toResponse())
+
+        // Cafe owner commission
+        val cafeRate = event.cafe.commissionRate
+        val cafeUnitPrice = event.price * cafeRate / 100
+        val cafeTotal = participantCount * cafeUnitPrice
+        val cafeOwners = cafeOwnerRepository.findByCafeId(event.cafe.id)
+        val cafeOwnerId = cafeOwners.firstOrNull()?.id ?: 0L
+        val cafeCommission = commissionRepository.save(Commission(
+            cafe = event.cafe, event = event,
+            targetType = CommissionTargetType.CAFE_OWNER, targetId = cafeOwnerId,
+            participantCount = participantCount, eventPrice = event.price,
+            commissionRate = cafeRate, unitPrice = cafeUnitPrice, totalAmount = cafeTotal
+        ))
+        results.add(cafeCommission.toResponse())
+
+        return results
     }
 
     @Transactional
@@ -58,14 +80,18 @@ class CommissionService(
         return commission.toResponse()
     }
 
-    fun getByBarId(barId: Long): List<CommissionResponse> =
-        commissionRepository.findByBarId(barId).map { it.toResponse() }
+    fun getByTargetType(targetType: CommissionTargetType, targetId: Long): List<CommissionResponse> =
+        commissionRepository.findByTargetTypeAndTargetId(targetType, targetId).map { it.toResponse() }
+
+    fun getByCafeId(cafeId: Long): List<CommissionResponse> =
+        commissionRepository.findByCafeId(cafeId).map { it.toResponse() }
 
     fun getAll(): List<CommissionResponse> =
         commissionRepository.findAll().map { it.toResponse() }
 
     private fun Commission.toResponse() = CommissionResponse(
-        id = id, barId = bar.id, barName = bar.name, eventId = event.id, eventTitle = event.title,
+        id = id, cafeId = cafe.id, cafeName = cafe.name, eventId = event.id, eventTitle = event.title,
+        targetType = targetType, targetId = targetId,
         participantCount = participantCount, eventPrice = eventPrice, commissionRate = commissionRate,
         unitPrice = unitPrice, totalAmount = totalAmount, status = status,
         invoicedAt = invoicedAt, paidAt = paidAt
