@@ -14,9 +14,10 @@ abstract class BaseEntity {
     val id: Long = 0
 
     @CreatedDate
-    @Column(updatable = false)
+    @Column(nullable = false, updatable = false)
     var createdAt: LocalDateTime = LocalDateTime.now()
 
     @LastModifiedDate
+    @Column(nullable = false)
     var updatedAt: LocalDateTime = LocalDateTime.now()
 }
