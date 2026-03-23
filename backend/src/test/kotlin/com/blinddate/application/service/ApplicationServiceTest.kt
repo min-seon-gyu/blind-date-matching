@@ -4,6 +4,8 @@ import com.blinddate.application.entity.Application
 import com.blinddate.application.entity.ApplicationStatus
 import com.blinddate.application.repository.ApplicationRepository
 import com.blinddate.bar.entity.Bar
+import com.blinddate.barowner.entity.BarOwner
+import com.blinddate.barowner.repository.BarOwnerRepository
 import com.blinddate.common.exception.BadRequestException
 import com.blinddate.common.exception.ConflictException
 import com.blinddate.common.exception.NotFoundException
@@ -25,7 +27,8 @@ class ApplicationServiceTest {
     private val eventRepo = mockk<EventRepository>()
     private val participantRepo = mockk<ParticipantRepository>()
     private val profileRepo = mockk<ParticipantProfileRepository>()
-    private val service = ApplicationService(applicationRepo, eventRepo, participantRepo, profileRepo)
+    private val barOwnerRepo = mockk<BarOwnerRepository>()
+    private val service = ApplicationService(applicationRepo, eventRepo, participantRepo, profileRepo, barOwnerRepo)
 
     private val bar = Bar(name = "Test", address = "addr", slug = "test")
     private val participant = Participant(kakaoId = "123", nickname = "tester", isProfileComplete = true)
@@ -95,5 +98,40 @@ class ApplicationServiceTest {
 
         service.cancel(participant.id, 1L)
         assertEquals(ApplicationStatus.CANCELLED, app.status)
+    }
+
+    @Test
+    fun `approve should increment male count`() {
+        val app = Application(participant = participant, event = event, status = ApplicationStatus.PENDING)
+        val barOwner = BarOwner(bar = bar, name = "Owner", phoneNumber = "010", email = "o@t.com", password = "p")
+        every { applicationRepo.findById(1L) } returns Optional.of(app)
+        every { profileRepo.findByParticipantId(any()) } returns Optional.of(profile) // MALE
+        every { barOwnerRepo.findById(1L) } returns Optional.of(barOwner)
+
+        service.approve(1L, bar.id, 1L)
+        assertEquals(ApplicationStatus.APPROVED, app.status)
+        assertEquals(1, event.currentMaleCount)
+    }
+
+    @Test
+    fun `approve should throw when capacity exceeded`() {
+        val fullEvent = Event(bar = bar, title = "Full", date = LocalDate.of(2026, 4, 3),
+            time = LocalTime.of(19, 0), price = 30000, maleCapacity = 0, femaleCapacity = 10)
+        val app = Application(participant = participant, event = fullEvent, status = ApplicationStatus.PENDING)
+        every { applicationRepo.findById(1L) } returns Optional.of(app)
+        every { profileRepo.findByParticipantId(any()) } returns Optional.of(profile)
+        assertThrows(BadRequestException::class.java) { service.approve(1L, bar.id, 1L) }
+    }
+
+    @Test
+    fun `reject should set reason`() {
+        val app = Application(participant = participant, event = event, status = ApplicationStatus.PENDING)
+        val barOwner = BarOwner(bar = bar, name = "Owner", phoneNumber = "010", email = "o@t.com", password = "p")
+        every { applicationRepo.findById(1L) } returns Optional.of(app)
+        every { barOwnerRepo.findById(1L) } returns Optional.of(barOwner)
+
+        service.reject(1L, bar.id, 1L, "프로필 미흡")
+        assertEquals(ApplicationStatus.REJECTED, app.status)
+        assertEquals("프로필 미흡", app.rejectReason)
     }
 }

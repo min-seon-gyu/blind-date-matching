@@ -14,3 +14,5 @@ data class ApplicationResponse(
     val reviewedAt: LocalDateTime?,
     val rejectReason: String?
 )
+
+data class RejectRequest(val reason: String)
