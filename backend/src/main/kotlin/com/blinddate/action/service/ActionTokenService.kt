@@ -4,6 +4,7 @@ import com.blinddate.action.dto.ActionExecuteResponse
 import com.blinddate.action.dto.ActionInfoResponse
 import com.blinddate.action.entity.ActionToken
 import com.blinddate.action.repository.ActionTokenRepository
+import com.blinddate.auth.jwt.UserType
 import com.blinddate.common.exception.BadRequestException
 import com.blinddate.common.exception.NotFoundException
 import org.springframework.stereotype.Service
@@ -15,8 +16,8 @@ class ActionTokenService(
     private val actionTokenRepository: ActionTokenRepository
 ) {
     @Transactional
-    fun createToken(actionType: String, targetId: Long, barOwnerId: Long): String {
-        val token = ActionToken(actionType = actionType, targetId = targetId, barOwnerId = barOwnerId)
+    fun createToken(actionType: String, targetId: Long, actorType: UserType, actorId: Long): String {
+        val token = ActionToken(actionType = actionType, targetId = targetId, actorType = actorType, actorId = actorId)
         actionTokenRepository.save(token)
         return token.token
     }
