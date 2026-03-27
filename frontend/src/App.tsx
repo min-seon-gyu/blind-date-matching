@@ -1,32 +1,26 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
-import ProtectedRoute from './components/auth/ProtectedRoute'
-import AppLayout from './components/layout/AppLayout'
+import ProtectedRoute from '@/components/common/ProtectedRoute'
+import ParticipantLayout from '@/components/layout/ParticipantLayout'
 
-import LoginPage from './pages/LoginPage'
-import KakaoCallbackPage from './pages/KakaoCallbackPage'
-import ProfileSetupPage from './pages/ProfileSetupPage'
-import CalendarPage from './pages/CalendarPage'
-import EventDetailPage from './pages/EventDetailPage'
-import ChoicePage from './pages/ChoicePage'
-import MatchResultPage from './pages/MatchResultPage'
-import MyPage from './pages/MyPage'
-import MyApplicationsPage from './pages/MyApplicationsPage'
-import ProfileEditPage from './pages/ProfileEditPage'
-import BarStatusPage from './pages/BarStatusPage'
-import BarReservePage from './pages/BarReservePage'
-import NotificationsPage from './pages/NotificationsPage'
-import AdminEventsPage from './pages/admin/AdminEventsPage'
-import AdminApplicationsPage from './pages/admin/AdminApplicationsPage'
-import AdminMembersPage from './pages/admin/AdminMembersPage'
-import AdminBarPage from './pages/admin/AdminBarPage'
+import LoginPage from '@/pages/participant/LoginPage'
+import KakaoCallbackPage from '@/pages/participant/KakaoCallbackPage'
+import ProfileSetupPage from '@/pages/participant/ProfileSetupPage'
+import CafeMainPage from '@/pages/participant/CafeMainPage'
+import EventDetailPage from '@/pages/participant/EventDetailPage'
+import ChoicePage from '@/pages/participant/ChoicePage'
+import MatchResultPage from '@/pages/participant/MatchResultPage'
+import MyPage from '@/pages/participant/MyPage'
+import ProfileEditPage from '@/pages/participant/ProfileEditPage'
+import MyApplicationsPage from '@/pages/participant/MyApplicationsPage'
+import NotificationsPage from '@/pages/participant/NotificationsPage'
 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: 1,
-      staleTime: 1000 * 30,
+      staleTime: 30000,
     },
   },
 })
@@ -36,25 +30,22 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <Routes>
+          {/* Public */}
           <Route path="/login" element={<LoginPage />} />
           <Route path="/auth/kakao/callback" element={<KakaoCallbackPage />} />
-          <Route element={<ProtectedRoute />}>
+
+          {/* Participant (protected) */}
+          <Route element={<ProtectedRoute userType="PARTICIPANT" />}>
             <Route path="/profile/setup" element={<ProfileSetupPage />} />
-            <Route element={<AppLayout />}>
-              <Route path="/" element={<CalendarPage />} />
-              <Route path="/events/:id" element={<EventDetailPage />} />
-              <Route path="/events/:id/choose" element={<ChoicePage />} />
-              <Route path="/events/:id/result" element={<MatchResultPage />} />
-              <Route path="/mypage" element={<MyPage />} />
-              <Route path="/mypage/applications" element={<MyApplicationsPage />} />
-              <Route path="/mypage/profile" element={<ProfileEditPage />} />
-              <Route path="/bar" element={<BarStatusPage />} />
-              <Route path="/bar/reserve" element={<BarReservePage />} />
-              <Route path="/notifications" element={<NotificationsPage />} />
-              <Route path="/admin/events" element={<AdminEventsPage />} />
-              <Route path="/admin/applications" element={<AdminApplicationsPage />} />
-              <Route path="/admin/members" element={<AdminMembersPage />} />
-              <Route path="/admin/bar" element={<AdminBarPage />} />
+            <Route element={<ParticipantLayout />}>
+              <Route path="/cafes/:slug" element={<CafeMainPage />} />
+              <Route path="/cafes/:slug/events/:eventId" element={<EventDetailPage />} />
+              <Route path="/cafes/:slug/events/:eventId/choose" element={<ChoicePage />} />
+              <Route path="/cafes/:slug/events/:eventId/result" element={<MatchResultPage />} />
+              <Route path="/me" element={<MyPage />} />
+              <Route path="/me/profile" element={<ProfileEditPage />} />
+              <Route path="/me/applications" element={<MyApplicationsPage />} />
+              <Route path="/me/notifications" element={<NotificationsPage />} />
             </Route>
           </Route>
         </Routes>
