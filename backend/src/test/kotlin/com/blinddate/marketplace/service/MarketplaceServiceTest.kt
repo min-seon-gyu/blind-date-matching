@@ -87,7 +87,6 @@ class MarketplaceServiceTest {
 
     @Test
     fun `only author can update post`() {
-        val owner = UserPrincipal(id = 1L, userType = UserType.CAFE_OWNER, cafeId = 10L)
         val other = UserPrincipal(id = 99L, userType = UserType.CAFE_OWNER, cafeId = 20L)
         val post = MarketplacePost(
             type = MarketplacePostType.OFFER_SPACE,
