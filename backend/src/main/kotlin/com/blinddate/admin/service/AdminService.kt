@@ -1,13 +1,15 @@
 package com.blinddate.admin.service
 
 import com.blinddate.admin.dto.*
-import com.blinddate.bar.dto.BarResponse
-import com.blinddate.bar.entity.Bar
-import com.blinddate.bar.repository.BarRepository
-import com.blinddate.barowner.entity.BarOwner
-import com.blinddate.barowner.repository.BarOwnerRepository
+import com.blinddate.cafe.dto.CafeResponse
+import com.blinddate.cafe.entity.Cafe
+import com.blinddate.cafe.repository.CafeRepository
+import com.blinddate.cafeowner.entity.CafeOwner
+import com.blinddate.cafeowner.repository.CafeOwnerRepository
 import com.blinddate.common.exception.ConflictException
 import com.blinddate.common.exception.NotFoundException
+import com.blinddate.organizer.entity.Organizer
+import com.blinddate.organizer.repository.OrganizerRepository
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -15,31 +17,48 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 @Transactional(readOnly = true)
 class AdminService(
-    private val barRepository: BarRepository,
-    private val barOwnerRepository: BarOwnerRepository,
+    private val cafeRepository: CafeRepository,
+    private val cafeOwnerRepository: CafeOwnerRepository,
+    private val organizerRepository: OrganizerRepository,
     private val passwordEncoder: PasswordEncoder
 ) {
     @Transactional
-    fun createBar(request: CreateBarRequest): BarResponse {
-        if (barRepository.existsBySlug(request.slug)) throw ConflictException("이미 사용 중인 slug입니다")
-        val bar = barRepository.save(Bar(
+    fun createCafe(request: CreateCafeRequest): CafeResponse {
+        if (cafeRepository.existsBySlug(request.slug)) throw ConflictException("이미 사용 중인 slug입니다")
+        val cafe = cafeRepository.save(Cafe(
             name = request.name, address = request.address, slug = request.slug,
             description = request.description, commissionRate = request.commissionRate
         ))
-        return bar.toResponse()
+        return CafeResponse.from(cafe)
     }
 
-    fun getBars(): List<BarResponse> = barRepository.findAll().map { it.toResponse() }
+    fun getCafes(): List<CafeResponse> = cafeRepository.findAll().map { CafeResponse.from(it) }
 
     @Transactional
-    fun createBarOwner(request: CreateBarOwnerRequest) {
-        val bar = barRepository.findById(request.barId).orElseThrow { NotFoundException("바를 찾을 수 없습니다") }
-        barOwnerRepository.save(BarOwner(
-            bar = bar, name = request.name, phoneNumber = request.phoneNumber,
+    fun createCafeOwner(request: CreateCafeOwnerRequest) {
+        val cafe = cafeRepository.findById(request.cafeId).orElseThrow { NotFoundException("카페를 찾을 수 없습니다") }
+        cafeOwnerRepository.save(CafeOwner(
+            cafe = cafe, name = request.name, phoneNumber = request.phoneNumber,
             email = request.email, password = passwordEncoder.encode(request.password),
             kakaoId = request.kakaoId
         ))
     }
 
-    private fun Bar.toResponse() = BarResponse(id, name, address, description, logoUrl, coverImageUrl, slug, isActive)
+    @Transactional
+    fun createOrganizer(request: CreateOrganizerRequest): OrganizerResponse {
+        val organizer = organizerRepository.save(Organizer(
+            name = request.name, phoneNumber = request.phoneNumber,
+            email = request.email, password = passwordEncoder.encode(request.password),
+            description = request.description, commissionRate = request.commissionRate,
+            kakaoId = request.kakaoId
+        ))
+        return organizer.toResponse()
+    }
+
+    fun getOrganizers(): List<OrganizerResponse> = organizerRepository.findAll().map { it.toResponse() }
+
+    private fun Organizer.toResponse() = OrganizerResponse(
+        id = id, name = name, phoneNumber = phoneNumber,
+        email = email, description = description, commissionRate = commissionRate
+    )
 }

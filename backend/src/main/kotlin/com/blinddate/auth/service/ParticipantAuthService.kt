@@ -42,7 +42,7 @@ class ParticipantAuthService(
         }
         val principal = jwtTokenProvider.getUserPrincipal(refreshToken)
         return TokenResponse(
-            accessToken = jwtTokenProvider.createAccessToken(principal.id, principal.userType, principal.barId),
+            accessToken = jwtTokenProvider.createAccessToken(principal.id, principal.userType, principal.cafeId),
             refreshToken = jwtTokenProvider.createRefreshToken(principal.id, principal.userType)
         )
     }

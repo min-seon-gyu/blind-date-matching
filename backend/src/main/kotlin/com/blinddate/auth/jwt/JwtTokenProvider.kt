@@ -15,8 +15,8 @@ class JwtTokenProvider(
 ) {
     private val key: SecretKey by lazy { Keys.hmacShaKeyFor(secret.toByteArray()) }
 
-    fun createAccessToken(userId: Long, userType: UserType, barId: Long? = null): String =
-        buildToken(userId, userType, barId, accessTokenExpiry, "access")
+    fun createAccessToken(userId: Long, userType: UserType, cafeId: Long? = null): String =
+        buildToken(userId, userType, cafeId, accessTokenExpiry, "access")
 
     fun createRefreshToken(userId: Long, userType: UserType): String =
         buildToken(userId, userType, null, refreshTokenExpiry, "refresh")
@@ -36,7 +36,7 @@ class JwtTokenProvider(
         return UserPrincipal(
             id = claims.subject.toLong(),
             userType = UserType.valueOf(claims["userType"] as String),
-            barId = (claims["barId"] as? Number)?.toLong()
+            cafeId = (claims["cafeId"] as? Number)?.toLong()
         )
     }
 
@@ -45,7 +45,7 @@ class JwtTokenProvider(
         return claims["tokenType"] as? String ?: "access"
     }
 
-    private fun buildToken(userId: Long, userType: UserType, barId: Long?, expiry: Long, tokenType: String): String {
+    private fun buildToken(userId: Long, userType: UserType, cafeId: Long?, expiry: Long, tokenType: String): String {
         val now = Date()
         val builder = Jwts.builder()
             .subject(userId.toString())
@@ -55,7 +55,7 @@ class JwtTokenProvider(
             .expiration(Date(now.time + expiry))
             .signWith(key)
 
-        barId?.let { builder.claim("barId", it) }
+        cafeId?.let { builder.claim("cafeId", it) }
         return builder.compact()
     }
 }

@@ -1,6 +1,6 @@
 package com.blinddate.commission.entity
 
-import com.blinddate.bar.entity.Bar
+import com.blinddate.cafe.entity.Cafe
 import com.blinddate.common.entity.BaseEntity
 import com.blinddate.event.entity.Event
 import jakarta.persistence.*
@@ -9,8 +9,10 @@ import java.time.LocalDateTime
 @Entity
 @Table(name = "commission")
 class Commission(
-    @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "bar_id", nullable = false) val bar: Bar,
-    @OneToOne(fetch = FetchType.LAZY) @JoinColumn(name = "event_id", unique = true, nullable = false) val event: Event,
+    @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "cafe_id", nullable = false) val cafe: Cafe,
+    @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "event_id", nullable = false) val event: Event,
+    @Enumerated(EnumType.STRING) @Column(nullable = false) val targetType: CommissionTargetType,
+    @Column(nullable = false) val targetId: Long,
     @Column(nullable = false) val participantCount: Int,
     @Column(nullable = false) val eventPrice: Int,
     @Column(nullable = false) val commissionRate: Int,

@@ -2,7 +2,6 @@ package com.blinddate.scheduler
 
 import com.blinddate.application.entity.ApplicationStatus
 import com.blinddate.application.repository.ApplicationRepository
-import com.blinddate.barowner.repository.BarOwnerRepository
 import com.blinddate.commission.service.CommissionService
 import com.blinddate.event.entity.EventStatus
 import com.blinddate.event.repository.EventRepository
@@ -24,8 +23,7 @@ class MatchingScheduler(
     private val matchResultRepository: MatchResultRepository,
     private val applicationRepository: ApplicationRepository,
     private val notificationService: NotificationService,
-    private val commissionService: CommissionService,
-    private val barOwnerRepository: BarOwnerRepository
+    private val commissionService: CommissionService
 ) {
     private val log = LoggerFactory.getLogger(javaClass)
 
@@ -70,16 +68,14 @@ class MatchingScheduler(
                         )
                     }
 
-                    // Notify bar owner
+                    // Notify organizer
                     val matchCount = matchResultRepository.findByEventId(event.id).size
                     val participantCount = allApproved.size
-                    barOwnerRepository.findByBarId(event.bar.id).ifPresent { owner ->
-                        notificationService.send(
-                            RecipientType.BAR_OWNER, owner.id,
-                            NotificationType.EVENT_COMPLETED, "이벤트 완료",
-                            "${event.title} 이벤트 완료! 참가자 ${participantCount}명, 매칭 ${matchCount}쌍"
-                        )
-                    }
+                    notificationService.send(
+                        RecipientType.ORGANIZER, event.organizer.id,
+                        NotificationType.EVENT_COMPLETED, "이벤트 완료",
+                        "${event.title} 이벤트 완료! 참가자 ${participantCount}명, 매칭 ${matchCount}쌍"
+                    )
 
                     // Complete event + create commission
                     event.status = EventStatus.COMPLETED

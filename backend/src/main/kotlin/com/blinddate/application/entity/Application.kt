@@ -1,6 +1,6 @@
 package com.blinddate.application.entity
 
-import com.blinddate.barowner.entity.BarOwner
+import com.blinddate.organizer.entity.Organizer
 import com.blinddate.common.entity.BaseEntity
 import com.blinddate.event.entity.Event
 import com.blinddate.participant.entity.Participant
@@ -24,7 +24,7 @@ class Application(
     var reviewedAt: LocalDateTime? = null,
 
     @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "reviewed_by")
-    var reviewedBy: BarOwner? = null,
+    var reviewedBy: Organizer? = null,
 
     @Column(columnDefinition = "TEXT") var rejectReason: String? = null
 ) : BaseEntity()

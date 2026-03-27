@@ -1,6 +1,6 @@
 package com.blinddate.event.service
 
-import com.blinddate.bar.repository.BarRepository
+import com.blinddate.cafe.repository.CafeRepository
 import com.blinddate.common.exception.NotFoundException
 import com.blinddate.event.dto.*
 import com.blinddate.event.entity.Event
@@ -12,11 +12,11 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional(readOnly = true)
 class EventService(
     private val eventRepository: EventRepository,
-    private val barRepository: BarRepository
+    private val cafeRepository: CafeRepository
 ) {
-    fun getEventsByBar(slug: String): List<EventResponse> {
-        val bar = barRepository.findBySlug(slug).orElseThrow { NotFoundException("바를 찾을 수 없습니다") }
-        return eventRepository.findByBarIdAndDeletedAtIsNullOrderByDateAsc(bar.id).map { it.toResponse() }
+    fun getEventsByCafe(slug: String): List<EventResponse> {
+        val cafe = cafeRepository.findBySlug(slug) ?: throw NotFoundException("카페를 찾을 수 없습니다")
+        return eventRepository.findByCafeIdAndDeletedAtIsNull(cafe.id).map { it.toResponse() }
     }
 
     fun getEvent(eventId: Long): EventResponse {
@@ -25,15 +25,19 @@ class EventService(
         return event.toResponse()
     }
 
-    fun getEventByBarSlugAndId(slug: String, eventId: Long): EventResponse {
-        val bar = barRepository.findBySlug(slug).orElseThrow { NotFoundException("바를 찾을 수 없습니다") }
+    fun getEventByCafeSlugAndId(slug: String, eventId: Long): EventResponse {
+        val cafe = cafeRepository.findBySlug(slug) ?: throw NotFoundException("카페를 찾을 수 없습니다")
         val event = eventRepository.findById(eventId).orElseThrow { NotFoundException("이벤트를 찾을 수 없습니다") }
-        if (event.isDeleted() || event.bar.slug != bar.slug) throw NotFoundException("이벤트를 찾을 수 없습니다")
+        if (event.isDeleted() || event.cafe.slug != cafe.slug) throw NotFoundException("이벤트를 찾을 수 없습니다")
         return event.toResponse()
     }
 
+    fun getByCafeId(cafeId: Long): List<EventResponse> {
+        return eventRepository.findByCafeIdAndDeletedAtIsNull(cafeId).map { it.toResponse() }
+    }
+
     fun Event.toResponse() = EventResponse(
-        id, bar.id, title, date, time, maleCapacity, femaleCapacity,
+        id, cafe.id, organizer.id, title, date, time, maleCapacity, femaleCapacity,
         currentMaleCount, currentFemaleCount, price, status, description,
         choiceDeadline, matchNotificationTime, minAge, maxAge, maxChoices, matchingMode
     )
