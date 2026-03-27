@@ -6,16 +6,27 @@
 
 ### Phase 1: 백엔드 MVP (완료)
 
-Bar 중심 멀티테넌트 백엔드 API 구축 완료. 3개 사용자 유형(Participant, BarOwner, PlatformAdmin) 기반.
+Bar 중심 멀티테넌트 백엔드 API 구축 완료.
 
 - 스펙: `docs/superpowers/specs/2026-03-23-b2b-blind-date-platform-design.md`
 - 구현 계획: `docs/superpowers/plans/2026-03-23-b2b-backend-implementation.md`
 
-### Phase 2: 역할 분리 + 마켓플레이스 + 프론트엔드 (진행 중)
+### Phase 2-1: 백엔드 역할 분리 (완료)
 
-BarOwner를 CafeOwner(장소 제공) + Organizer(이벤트 운영)로 분리. 제휴 마켓플레이스 추가. 프론트엔드 전면 구현.
+BarOwner를 CafeOwner(장소 제공) + Organizer(이벤트 운영)로 분리. Bar → Cafe 리네이밍. Commission 이원화. 4개 사용자 유형(Participant, Organizer, CafeOwner, PlatformAdmin) 기반.
 
-- 스펙: `docs/superpowers/specs/2026-03-23-frontend-design.md`
+- 스펙: `docs/superpowers/specs/2026-03-23-frontend-design.md` (Section 1)
+- 구현 계획: `docs/superpowers/plans/2026-03-23-backend-restructure.md`
+
+### Phase 2-2: 백엔드 마켓플레이스 (다음)
+
+제휴 마켓플레이스 (Partnership, MarketplacePost) 추가.
+
+### Phase 2-3: 프론트엔드 (예정)
+
+React 19 + shadcn/ui + Tailwind CSS. 참가자(모바일) + 주관자/카페주인/관리자(데스크톱) 전체 구현.
+
+- 스펙: `docs/superpowers/specs/2026-03-23-frontend-design.md` (Section 2)
 
 ## 기술 스택
 
@@ -59,8 +70,9 @@ blind-date-matching/
 │   └── src/main/kotlin/com/blinddate/
 │       ├── auth/              # JWT 인증 (4개 사용자 유형)
 │       ├── participant/       # 참가자 프로필
-│       ├── bar/               # 바(카페) 공개 API
-│       ├── barowner/          # 바 사장님 관리 (→ Phase 2에서 cafeowner + organizer로 분리)
+│       ├── cafe/              # 카페 엔티티 + 공개 API
+│       ├── cafeowner/         # 카페 주인 관리 (장소 제공)
+│       ├── organizer/         # 주관자 관리 (이벤트 운영)
 │       ├── event/             # 이벤트 엔티티 + 공개 API
 │       ├── application/       # 참가 신청/승인/거절
 │       ├── matching/          # 참가번호, 선택, 매칭 알고리즘

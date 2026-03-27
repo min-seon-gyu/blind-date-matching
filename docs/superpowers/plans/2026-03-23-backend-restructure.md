@@ -116,7 +116,7 @@ backend/src/test/kotlin/com/blinddate/matching/service/MatchingServiceTest.kt
 **Files:**
 - Create: `cafe/entity/Cafe.kt`, `cafe/repository/CafeRepository.kt`
 
-- [ ] **Step 1: Cafe 엔티티 생성**
+- [x] **Step 1: Cafe 엔티티 생성**
 
 ```kotlin
 // cafe/entity/Cafe.kt
@@ -141,7 +141,7 @@ class Cafe(
 ) : BaseEntity()
 ```
 
-- [ ] **Step 3: CafeRepository 생성**
+- [x] **Step 3: CafeRepository 생성**
 
 ```kotlin
 // cafe/repository/CafeRepository.kt
@@ -156,12 +156,12 @@ interface CafeRepository : JpaRepository<Cafe, Long> {
 }
 ```
 
-- [ ] **Step 4: 빌드 확인 (성공 예상 — 기존 bar/ 패키지 유지 중)**
+- [x] **Step 4: 빌드 확인 (성공 예상 — 기존 bar/ 패키지 유지 중)**
 
 Run: `cd backend && ./gradlew compileKotlin 2>&1 | tail -5`
 Expected: BUILD SUCCESSFUL (기존 코드와 새 코드가 공존)
 
-- [ ] **Step 5: 커밋**
+- [x] **Step 5: 커밋**
 
 ```bash
 git add -A && git commit -m "feat: add Cafe entity with lat/lng fields (parallel to existing Bar)"
@@ -176,7 +176,7 @@ git add -A && git commit -m "feat: add Cafe entity with lat/lng fields (parallel
 **Files:**
 - Create: `cafeowner/entity/CafeOwner.kt`, `cafeowner/repository/CafeOwnerRepository.kt`
 
-- [ ] **Step 1: CafeOwner 엔티티 생성**
+- [x] **Step 1: CafeOwner 엔티티 생성**
 
 ```kotlin
 // cafeowner/entity/CafeOwner.kt
@@ -201,7 +201,7 @@ class CafeOwner(
 ) : BaseEntity()
 ```
 
-- [ ] **Step 3: CafeOwnerRepository 생성**
+- [x] **Step 3: CafeOwnerRepository 생성**
 
 ```kotlin
 // cafeowner/repository/CafeOwnerRepository.kt
@@ -216,7 +216,7 @@ interface CafeOwnerRepository : JpaRepository<CafeOwner, Long> {
 }
 ```
 
-- [ ] **Step 4: 커밋**
+- [x] **Step 4: 커밋**
 
 ```bash
 git add -A && git commit -m "refactor: rename BarOwner to CafeOwner entity"
@@ -231,7 +231,7 @@ git add -A && git commit -m "refactor: rename BarOwner to CafeOwner entity"
 **Files:**
 - Create: `organizer/entity/Organizer.kt`, `organizer/repository/OrganizerRepository.kt`
 
-- [ ] **Step 1: Organizer 엔티티 생성**
+- [x] **Step 1: Organizer 엔티티 생성**
 
 ```kotlin
 // organizer/entity/Organizer.kt
@@ -253,7 +253,7 @@ class Organizer(
 ) : BaseEntity()
 ```
 
-- [ ] **Step 2: OrganizerRepository 생성**
+- [x] **Step 2: OrganizerRepository 생성**
 
 ```kotlin
 // organizer/repository/OrganizerRepository.kt
@@ -267,7 +267,7 @@ interface OrganizerRepository : JpaRepository<Organizer, Long> {
 }
 ```
 
-- [ ] **Step 3: 커밋**
+- [x] **Step 3: 커밋**
 
 ```bash
 git add -A && git commit -m "feat: add Organizer entity and repository"
@@ -282,7 +282,7 @@ git add -A && git commit -m "feat: add Organizer entity and repository"
 **Files:**
 - Modify: `auth/jwt/UserType.kt`, `auth/jwt/UserPrincipal.kt`, `auth/jwt/JwtTokenProvider.kt`, `auth/jwt/JwtAuthenticationFilter.kt`, `common/config/SecurityConfig.kt`
 
-- [ ] **Step 1: UserType enum 업데이트**
+- [x] **Step 1: UserType enum 업데이트**
 
 ```kotlin
 // auth/jwt/UserType.kt
@@ -290,7 +290,7 @@ package com.blinddate.auth.jwt
 enum class UserType { PARTICIPANT, ORGANIZER, CAFE_OWNER, PLATFORM_ADMIN }
 ```
 
-- [ ] **Step 2: UserPrincipal 업데이트 (barId → cafeId)**
+- [x] **Step 2: UserPrincipal 업데이트 (barId → cafeId)**
 
 ```kotlin
 // auth/jwt/UserPrincipal.kt
@@ -302,7 +302,7 @@ data class UserPrincipal(
 )
 ```
 
-- [ ] **Step 3: JwtTokenProvider 업데이트 (barId → cafeId)**
+- [x] **Step 3: JwtTokenProvider 업데이트 (barId → cafeId)**
 
 `JwtTokenProvider.kt`에서:
 - `createAccessToken` 파라미터: `barId` → `cafeId`
@@ -338,7 +338,7 @@ private fun buildToken(userId: Long, userType: UserType, cafeId: Long?, expiry: 
 }
 ```
 
-- [ ] **Step 4: JwtAuthenticationFilter 업데이트**
+- [x] **Step 4: JwtAuthenticationFilter 업데이트**
 
 기존 `BAR_OWNER` → `CAFE_OWNER` 역할 매핑 변경. `ORGANIZER` 역할 추가.
 
@@ -352,7 +352,7 @@ val authorities = when (principal.userType) {
 }
 ```
 
-- [ ] **Step 5: SecurityConfig 업데이트**
+- [x] **Step 5: SecurityConfig 업데이트**
 
 ```kotlin
 // SecurityConfig.kt의 authorizeHttpRequests 부분:
@@ -372,7 +372,7 @@ val authorities = when (principal.userType) {
 }
 ```
 
-- [ ] **Step 6: 커밋**
+- [x] **Step 6: 커밋**
 
 ```bash
 git add -A && git commit -m "refactor: update auth system for ORGANIZER and CAFE_OWNER roles"
@@ -387,7 +387,7 @@ Event에 organizer FK 추가, Application의 reviewedBy를 Organizer로 변경.
 **Files:**
 - Modify: `event/entity/Event.kt`, `event/repository/EventRepository.kt`, `application/entity/Application.kt`
 
-- [ ] **Step 1: Event 엔티티 수정 (bar → cafe, organizer 추가)**
+- [x] **Step 1: Event 엔티티 수정 (bar → cafe, organizer 추가)**
 
 ```kotlin
 // event/entity/Event.kt — import 및 필드 변경
@@ -409,7 +409,7 @@ class Event(
 )
 ```
 
-- [ ] **Step 2: EventRepository 수정 (Bar → Cafe)**
+- [x] **Step 2: EventRepository 수정 (Bar → Cafe)**
 
 ```kotlin
 // event/repository/EventRepository.kt
@@ -418,7 +418,7 @@ fun findByCafeIdAndDeletedAtIsNull(cafeId: Long): List<Event>
 fun findByOrganizerIdAndDeletedAtIsNull(organizerId: Long): List<Event>
 ```
 
-- [ ] **Step 3: Application 엔티티 수정 (reviewedBy: BarOwner → Organizer)**
+- [x] **Step 3: Application 엔티티 수정 (reviewedBy: BarOwner → Organizer)**
 
 ```kotlin
 // application/entity/Application.kt — import 변경
@@ -429,7 +429,7 @@ import com.blinddate.organizer.entity.Organizer
 var reviewedBy: Organizer? = null,
 ```
 
-- [ ] **Step 4: 커밋**
+- [x] **Step 4: 커밋**
 
 ```bash
 git add -A && git commit -m "refactor: update Event and Application entities for Organizer ownership"
@@ -445,7 +445,7 @@ ActionToken을 범용화하고, Commission을 이원화하고, Notification의 R
 - Modify: `action/entity/ActionToken.kt`, `commission/entity/Commission.kt`, `notification/entity/RecipientType.kt`, `notification/entity/NotificationType.kt`
 - Create: `commission/entity/CommissionTargetType.kt`
 
-- [ ] **Step 1: ActionToken 수정 (barOwnerId → actorType + actorId)**
+- [x] **Step 1: ActionToken 수정 (barOwnerId → actorType + actorId)**
 
 ```kotlin
 // action/entity/ActionToken.kt
@@ -475,7 +475,7 @@ class ActionToken(
 }
 ```
 
-- [ ] **Step 2: CommissionTargetType enum 생성**
+- [x] **Step 2: CommissionTargetType enum 생성**
 
 ```kotlin
 // commission/entity/CommissionTargetType.kt
@@ -483,7 +483,7 @@ package com.blinddate.commission.entity
 enum class CommissionTargetType { ORGANIZER, CAFE_OWNER }
 ```
 
-- [ ] **Step 3: Commission 엔티티 수정 (이원화)**
+- [x] **Step 3: Commission 엔티티 수정 (이원화)**
 
 ```kotlin
 // commission/entity/Commission.kt
@@ -513,7 +513,7 @@ class Commission(
 ) : BaseEntity()
 ```
 
-- [ ] **Step 4: RecipientType 확장**
+- [x] **Step 4: RecipientType 확장**
 
 ```kotlin
 // notification/entity/RecipientType.kt
@@ -521,7 +521,7 @@ package com.blinddate.notification.entity
 enum class RecipientType { PARTICIPANT, ORGANIZER, CAFE_OWNER }
 ```
 
-- [ ] **Step 5: NotificationType 확장**
+- [x] **Step 5: NotificationType 확장**
 
 ```kotlin
 // notification/entity/NotificationType.kt
@@ -533,7 +533,7 @@ enum class NotificationType {
 }
 ```
 
-- [ ] **Step 6: 커밋**
+- [x] **Step 6: 커밋**
 
 ```bash
 git add -A && git commit -m "refactor: update ActionToken, Commission, Notification for role split"
@@ -549,7 +549,7 @@ git add -A && git commit -m "refactor: update ActionToken, Commission, Notificat
 - Create: `auth/service/CafeOwnerAuthService.kt`, `auth/service/OrganizerAuthService.kt`
 - Modify: `auth/dto/AuthDtos.kt`, `auth/controller/AuthController.kt`
 
-- [ ] **Step 1: CafeOwnerAuthService 테스트 작성**
+- [x] **Step 1: CafeOwnerAuthService 테스트 작성**
 
 ```kotlin
 // test/.../auth/service/CafeOwnerAuthServiceTest.kt
@@ -605,12 +605,12 @@ class CafeOwnerAuthServiceTest {
 }
 ```
 
-- [ ] **Step 2: 테스트 실패 확인**
+- [x] **Step 2: 테스트 실패 확인**
 
 Run: `cd backend && ./gradlew test --tests "com.blinddate.auth.service.CafeOwnerAuthServiceTest" 2>&1 | tail -5`
 Expected: FAIL (CafeOwnerAuthService 미존재)
 
-- [ ] **Step 3: CafeOwnerAuthService 구현**
+- [x] **Step 3: CafeOwnerAuthService 구현**
 
 ```kotlin
 // auth/service/CafeOwnerAuthService.kt
@@ -643,7 +643,7 @@ class CafeOwnerAuthService(
 }
 ```
 
-- [ ] **Step 4: OrganizerAuthService 테스트 작성**
+- [x] **Step 4: OrganizerAuthService 테스트 작성**
 
 ```kotlin
 // test/.../auth/service/OrganizerAuthServiceTest.kt
@@ -683,7 +683,7 @@ class OrganizerAuthServiceTest {
 }
 ```
 
-- [ ] **Step 5: OrganizerAuthService 구현**
+- [x] **Step 5: OrganizerAuthService 구현**
 
 ```kotlin
 // auth/service/OrganizerAuthService.kt
@@ -715,16 +715,16 @@ class OrganizerAuthService(
 }
 ```
 
-- [ ] **Step 6: AuthDtos 업데이트 (TokenResponse에 user 정보 포함되도록)**
+- [x] **Step 6: AuthDtos 업데이트 (TokenResponse에 user 정보 포함되도록)**
 
 기존 `AuthDtos.kt`를 확인하고, `LoginRequest` + `TokenResponse`가 있으면 유지. 없으면 추가.
 
-- [ ] **Step 7: 테스트 통과 확인**
+- [x] **Step 7: 테스트 통과 확인**
 
 Run: `cd backend && ./gradlew test --tests "com.blinddate.auth.service.*AuthServiceTest" 2>&1 | tail -10`
 Expected: PASS
 
-- [ ] **Step 8: 커밋**
+- [x] **Step 8: 커밋**
 
 ```bash
 git add -A && git commit -m "feat: add CafeOwnerAuthService and OrganizerAuthService"
@@ -741,7 +741,7 @@ Cafe 공개 조회 API와 CafeOwner 관리 API를 구현한다.
 - Create: `cafeowner/dto/CafeOwnerDtos.kt`, `cafeowner/service/CafeOwnerService.kt`
 - Create: `cafeowner/controller/CafeOwnerAuthController.kt`, `cafeowner/controller/CafeOwnerCafeController.kt`
 
-- [ ] **Step 1: CafeDtos 생성**
+- [x] **Step 1: CafeDtos 생성**
 
 ```kotlin
 // cafe/dto/CafeDtos.kt
@@ -764,7 +764,7 @@ data class CafeResponse(
 }
 ```
 
-- [ ] **Step 2: CafeService 구현**
+- [x] **Step 2: CafeService 구현**
 
 ```kotlin
 // cafe/service/CafeService.kt
@@ -784,7 +784,7 @@ class CafeService(private val cafeRepository: CafeRepository) {
 }
 ```
 
-- [ ] **Step 3: CafeController 구현 (공개 API)**
+- [x] **Step 3: CafeController 구현 (공개 API)**
 
 ```kotlin
 // cafe/controller/CafeController.kt
@@ -811,7 +811,7 @@ class CafeController(
 }
 ```
 
-- [ ] **Step 4: CafeOwnerDtos 생성**
+- [x] **Step 4: CafeOwnerDtos 생성**
 
 ```kotlin
 // cafeowner/dto/CafeOwnerDtos.kt
@@ -824,7 +824,7 @@ data class UpdateCafeRequest(
 )
 ```
 
-- [ ] **Step 5: CafeOwnerService 테스트 작성**
+- [x] **Step 5: CafeOwnerService 테스트 작성**
 
 ```kotlin
 // test/.../cafeowner/service/CafeOwnerServiceTest.kt
@@ -875,7 +875,7 @@ class CafeOwnerServiceTest {
 }
 ```
 
-- [ ] **Step 6: CafeOwnerService 구현**
+- [x] **Step 6: CafeOwnerService 구현**
 
 ```kotlin
 // cafeowner/service/CafeOwnerService.kt
@@ -909,7 +909,7 @@ class CafeOwnerService(private val cafeRepository: CafeRepository) {
 }
 ```
 
-- [ ] **Step 7: CafeOwner 컨트롤러 구현**
+- [x] **Step 7: CafeOwner 컨트롤러 구현**
 
 ```kotlin
 // cafeowner/controller/CafeOwnerAuthController.kt
@@ -950,12 +950,12 @@ class CafeOwnerCafeController(private val cafeOwnerService: CafeOwnerService) {
 }
 ```
 
-- [ ] **Step 8: 테스트 통과 확인**
+- [x] **Step 8: 테스트 통과 확인**
 
 Run: `cd backend && ./gradlew test --tests "com.blinddate.cafeowner.service.*" 2>&1 | tail -5`
 Expected: PASS
 
-- [ ] **Step 9: 커밋**
+- [x] **Step 9: 커밋**
 
 ```bash
 git add -A && git commit -m "feat: add Cafe public API and CafeOwner management controllers"
@@ -972,7 +972,7 @@ git add -A && git commit -m "feat: add Cafe public API and CafeOwner management 
 - Create: `organizer/controller/OrganizerAuthController.kt`, `organizer/controller/OrganizerEventController.kt`, `organizer/controller/OrganizerApplicationController.kt`
 - Modify: `event/service/EventService.kt`, `event/dto/EventDtos.kt`, `application/service/ApplicationService.kt`
 
-- [ ] **Step 1: OrganizerDtos 생성**
+- [x] **Step 1: OrganizerDtos 생성**
 
 ```kotlin
 // organizer/dto/OrganizerDtos.kt
@@ -1013,7 +1013,7 @@ data class UpdateEventRequest(
 )
 ```
 
-- [ ] **Step 2: OrganizerService 테스트 작성 (이벤트 생성, 수정, 삭제)**
+- [x] **Step 2: OrganizerService 테스트 작성 (이벤트 생성, 수정, 삭제)**
 
 ```kotlin
 // test/.../organizer/service/OrganizerServiceTest.kt
@@ -1087,7 +1087,7 @@ class OrganizerServiceTest {
 }
 ```
 
-- [ ] **Step 3: OrganizerService 구현**
+- [x] **Step 3: OrganizerService 구현**
 
 ```kotlin
 // organizer/service/OrganizerService.kt
@@ -1167,7 +1167,7 @@ class OrganizerService(
 }
 ```
 
-- [ ] **Step 4: Organizer 컨트롤러 구현**
+- [x] **Step 4: Organizer 컨트롤러 구현**
 
 ```kotlin
 // organizer/controller/OrganizerAuthController.kt
@@ -1246,23 +1246,23 @@ class OrganizerApplicationController(private val applicationService: Application
 }
 ```
 
-- [ ] **Step 5: EventService, EventDtos 업데이트 (Bar → Cafe 참조)**
+- [x] **Step 5: EventService, EventDtos 업데이트 (Bar → Cafe 참조)**
 
 기존 `EventService`와 `EventDtos`에서 `bar` → `cafe`, `barId` → `cafeId` 참조를 일괄 변경. `EventResponse`에 `organizerId` 필드 추가.
 
-- [ ] **Step 6: ApplicationService 업데이트 (BarOwner → Organizer 참조)**
+- [x] **Step 6: ApplicationService 업데이트 (BarOwner → Organizer 참조)**
 
 기존 `ApplicationService`에서:
 - `BarOwnerRepository` → `OrganizerRepository` 의존성 변경
 - approve/reject 메서드에서 `barOwner` → `organizer` 참조
 - `getByEventForBarOwner` → `getByEventForOrganizer` 메서드명 변경
 
-- [ ] **Step 7: 테스트 통과 확인**
+- [x] **Step 7: 테스트 통과 확인**
 
 Run: `cd backend && ./gradlew test --tests "com.blinddate.organizer.service.*" 2>&1 | tail -10`
 Expected: PASS
 
-- [ ] **Step 8: 커밋**
+- [x] **Step 8: 커밋**
 
 ```bash
 git add -A && git commit -m "feat: add Organizer event CRUD and application management"
@@ -1280,7 +1280,7 @@ Commission을 이벤트당 2건 생성하도록 변경하고, Admin 컨트롤러
 - Modify: `admin/dto/AdminDtos.kt`, `admin/service/AdminService.kt`
 - Create: `admin/controller/AdminOrganizerController.kt`
 
-- [ ] **Step 1: CommissionRepository 업데이트**
+- [x] **Step 1: CommissionRepository 업데이트**
 
 ```kotlin
 // commission/repository/CommissionRepository.kt
@@ -1291,36 +1291,36 @@ interface CommissionRepository : JpaRepository<Commission, Long> {
 }
 ```
 
-- [ ] **Step 2: CommissionService 테스트 작성 (이원화: 이벤트당 2건)**
+- [x] **Step 2: CommissionService 테스트 작성 (이원화: 이벤트당 2건)**
 
 ```kotlin
 // test에서: createForEvent 호출 시 Commission 2건 (ORGANIZER용, CAFE_OWNER용) 생성 검증
 // save가 2번 호출되는지, 각각의 targetType/commissionRate이 올바른지 확인
 ```
 
-- [ ] **Step 3: CommissionService 구현 (이원화)**
+- [x] **Step 3: CommissionService 구현 (이원화)**
 
 `createForEvent`에서:
 1. Event 조회 → cafe.commissionRate, organizer.commissionRate 가져옴
 2. APPROVED 참가자 수 계산
 3. Commission 2건 생성: `CommissionTargetType.ORGANIZER` + `CommissionTargetType.CAFE_OWNER`
 
-- [ ] **Step 4: Admin 컨트롤러 변경**
+- [x] **Step 4: Admin 컨트롤러 변경**
 
 - `AdminBarController.kt` 삭제 → `AdminCafeController.kt` 생성 (`/api/admin/cafes`, `/api/admin/cafe-owners`)
 - `AdminOrganizerController.kt` 생성 (`/api/admin/organizers`)
 - `AdminService`에 `createOrganizer`, `getOrganizers` 메서드 추가
 - `AdminDtos`에 `CreateOrganizerRequest` 추가
 
-- [ ] **Step 5: AdminDashboard 업데이트**
+- [x] **Step 5: AdminDashboard 업데이트**
 
 기존 통계에 Organizer 관련 통계 추가.
 
-- [ ] **Step 6: 테스트 통과 확인**
+- [x] **Step 6: 테스트 통과 확인**
 
 Run: `cd backend && ./gradlew test --tests "com.blinddate.commission.service.*" --tests "com.blinddate.admin.service.*" 2>&1 | tail -10`
 
-- [ ] **Step 7: 커밋**
+- [x] **Step 7: 커밋**
 
 ```bash
 git add -A && git commit -m "feat: dualize Commission and update Admin for Cafe/Organizer structure"
@@ -1336,7 +1336,7 @@ git add -A && git commit -m "feat: dualize Commission and update Admin for Cafe/
 - Modify: `notification/service/NotificationService.kt`, `notification/controller/NotificationController.kt`
 - Modify: `action/service/ActionTokenService.kt`, `action/dto/ActionDtos.kt`
 
-- [ ] **Step 1: NotificationController 업데이트**
+- [x] **Step 1: NotificationController 업데이트**
 
 기존: PARTICIPANT만 알림 조회 가능.
 변경: ORGANIZER, CAFE_OWNER도 각자의 알림 조회 가능.
@@ -1352,20 +1352,20 @@ git add -A && git commit -m "feat: dualize Commission and update Admin for Cafe/
 
 각 역할의 컨트롤러에 알림 관련 메서드를 추가하거나, NotificationController를 범용화.
 
-- [ ] **Step 2: ActionTokenService 업데이트**
+- [x] **Step 2: ActionTokenService 업데이트**
 
 - `createToken` 메서드: `barOwnerId` 파라미터 → `actorType: UserType, actorId: Long`
 - `executeAction`: ActionToken의 `actorType`에 따라 적절한 서비스 호출
 
-- [ ] **Step 3: ActionTokenService 테스트 업데이트**
+- [x] **Step 3: ActionTokenService 테스트 업데이트**
 
 기존 테스트에서 `barOwnerId` → `actorType + actorId`로 변경.
 
-- [ ] **Step 4: 테스트 통과 확인**
+- [x] **Step 4: 테스트 통과 확인**
 
 Run: `cd backend && ./gradlew test --tests "com.blinddate.action.service.*" --tests "com.blinddate.notification.service.*" 2>&1 | tail -10`
 
-- [ ] **Step 5: 커밋**
+- [x] **Step 5: 커밋**
 
 ```bash
 git add -A && git commit -m "refactor: update Notification and ActionToken for multi-role support"
@@ -1380,22 +1380,22 @@ git add -A && git commit -m "refactor: update Notification and ActionToken for m
 **Files:**
 - Modify: `scheduler/EventStatusScheduler.kt`, `scheduler/MatchingScheduler.kt`, `scheduler/ReminderScheduler.kt`
 
-- [ ] **Step 1: EventStatusScheduler 수정**
+- [x] **Step 1: EventStatusScheduler 수정**
 
 Bar → Cafe 참조 변경. 로직은 동일.
 
-- [ ] **Step 2: MatchingScheduler 수정**
+- [x] **Step 2: MatchingScheduler 수정**
 
 - Bar → Cafe 참조 변경
 - 매칭 완료 알림: BarOwner → Organizer에게 발송
 - RecipientType.BAR_OWNER → RecipientType.ORGANIZER
 
-- [ ] **Step 3: ReminderScheduler 수정**
+- [x] **Step 3: ReminderScheduler 수정**
 
 - 참가자 리마인더: 기존 동일
 - 카페 주인 리마인더 추가: RecipientType.CAFE_OWNER에게 이벤트 전날 알림
 
-- [ ] **Step 4: 커밋**
+- [x] **Step 4: 커밋**
 
 ```bash
 git add -A && git commit -m "refactor: update schedulers for Cafe/Organizer references"
@@ -1410,49 +1410,49 @@ git add -A && git commit -m "refactor: update schedulers for Cafe/Organizer refe
 **Files:**
 - Modify: 모든 기존 테스트 파일의 Bar/BarOwner 참조를 Cafe/CafeOwner/Organizer로 변경
 
-- [ ] **Step 1: JwtTokenProviderTest 수정**
+- [x] **Step 1: JwtTokenProviderTest 수정**
 
 `BAR_OWNER` → `CAFE_OWNER`, `barId` → `cafeId` 참조 변경. ORGANIZER 토큰 테스트 추가.
 
-- [ ] **Step 2: EventServiceTest 수정**
+- [x] **Step 2: EventServiceTest 수정**
 
 Bar → Cafe, Event에 organizer 추가.
 
-- [ ] **Step 3: ApplicationServiceTest 수정**
+- [x] **Step 3: ApplicationServiceTest 수정**
 
 BarOwner → Organizer 참조 변경.
 
-- [ ] **Step 4: MatchingServiceTest 수정**
+- [x] **Step 4: MatchingServiceTest 수정**
 
 Bar → Cafe 참조 변경.
 
-- [ ] **Step 5: CommissionServiceTest 수정**
+- [x] **Step 5: CommissionServiceTest 수정**
 
 이원화 로직 반영.
 
-- [ ] **Step 6: NotificationServiceTest 수정**
+- [x] **Step 6: NotificationServiceTest 수정**
 
 RecipientType.BAR_OWNER → ORGANIZER/CAFE_OWNER.
 
-- [ ] **Step 7: ActionTokenServiceTest 수정**
+- [x] **Step 7: ActionTokenServiceTest 수정**
 
 barOwnerId → actorType + actorId.
 
-- [ ] **Step 8: AdminServiceTest 수정**
+- [x] **Step 8: AdminServiceTest 수정**
 
 Bar → Cafe, Organizer 관련 테스트 추가.
 
-- [ ] **Step 9: 전체 빌드 확인**
+- [x] **Step 9: 전체 빌드 확인**
 
 Run: `cd backend && ./gradlew build`
 Expected: BUILD SUCCESSFUL
 
-- [ ] **Step 10: 전체 테스트 실행**
+- [x] **Step 10: 전체 테스트 실행**
 
 Run: `cd backend && ./gradlew test`
 Expected: 모든 테스트 PASS
 
-- [ ] **Step 11: 커밋**
+- [x] **Step 11: 커밋**
 
 ```bash
 git add -A && git commit -m "test: update all tests for Cafe/Organizer restructure"
@@ -1468,7 +1468,7 @@ git add -A && git commit -m "test: update all tests for Cafe/Organizer restructu
 - Create: `cafeowner/controller/CafeOwnerEventController.kt`, `cafeowner/controller/CafeOwnerCommissionController.kt`
 - Create: `organizer/controller/OrganizerCommissionController.kt`
 
-- [ ] **Step 1: CafeOwnerEventController 구현**
+- [x] **Step 1: CafeOwnerEventController 구현**
 
 ```kotlin
 // cafeowner/controller/CafeOwnerEventController.kt
@@ -1479,7 +1479,7 @@ class CafeOwnerEventController(private val eventService: EventService) {
 }
 ```
 
-- [ ] **Step 2: CafeOwnerCommissionController 구현**
+- [x] **Step 2: CafeOwnerCommissionController 구현**
 
 ```kotlin
 // cafeowner/controller/CafeOwnerCommissionController.kt
@@ -1491,7 +1491,7 @@ class CafeOwnerCommissionController(private val commissionService: CommissionSer
 }
 ```
 
-- [ ] **Step 3: OrganizerCommissionController 구현**
+- [x] **Step 3: OrganizerCommissionController 구현**
 
 ```kotlin
 // organizer/controller/OrganizerCommissionController.kt
@@ -1503,12 +1503,12 @@ class OrganizerCommissionController(private val commissionService: CommissionSer
 }
 ```
 
-- [ ] **Step 4: 빌드 확인**
+- [x] **Step 4: 빌드 확인**
 
 Run: `cd backend && ./gradlew build`
 Expected: BUILD SUCCESSFUL
 
-- [ ] **Step 5: 커밋**
+- [x] **Step 5: 커밋**
 
 ```bash
 git add -A && git commit -m "feat: add CafeOwner event/commission and Organizer commission controllers"
@@ -1525,7 +1525,7 @@ git add -A && git commit -m "feat: add CafeOwner event/commission and Organizer 
 - Create: `cafeowner/controller/CafeOwnerDashboardController.kt`
 - Add notification endpoints to: `organizer/controller/OrganizerNotificationController.kt`, `cafeowner/controller/CafeOwnerNotificationController.kt`
 
-- [ ] **Step 1: OrganizerDashboardController 구현**
+- [x] **Step 1: OrganizerDashboardController 구현**
 
 ```kotlin
 // organizer/controller/OrganizerDashboardController.kt
@@ -1546,7 +1546,7 @@ class OrganizerDashboardController(private val organizerService: OrganizerServic
 
 OrganizerService에 `getDashboard(organizerId)` 메서드 추가: 진행 중 이벤트 수, 총 참가자 수, 최근 이벤트 등.
 
-- [ ] **Step 2: CafeOwnerDashboardController 구현**
+- [x] **Step 2: CafeOwnerDashboardController 구현**
 
 ```kotlin
 // cafeowner/controller/CafeOwnerDashboardController.kt
@@ -1567,7 +1567,7 @@ class CafeOwnerDashboardController(private val cafeOwnerService: CafeOwnerServic
 
 CafeOwnerService에 `getDashboard(cafeId)` 메서드 추가: 예정 이벤트 수, 수수료 요약 등.
 
-- [ ] **Step 3: Organizer/CafeOwner Notification 컨트롤러 구현**
+- [x] **Step 3: Organizer/CafeOwner Notification 컨트롤러 구현**
 
 ```kotlin
 // organizer/controller/OrganizerNotificationController.kt
@@ -1615,12 +1615,12 @@ class CafeOwnerNotificationController(private val notificationService: Notificat
 }
 ```
 
-- [ ] **Step 4: 빌드 확인**
+- [x] **Step 4: 빌드 확인**
 
 Run: `cd backend && ./gradlew build`
 Expected: BUILD SUCCESSFUL
 
-- [ ] **Step 5: 커밋**
+- [x] **Step 5: 커밋**
 
 ```bash
 git add -A && git commit -m "feat: add Dashboard and Notification controllers for Organizer and CafeOwner"
@@ -1636,7 +1636,7 @@ git add -A && git commit -m "feat: add Dashboard and Notification controllers fo
 - Delete: `bar/` 전체, `barowner/` 전체, `auth/service/BarOwnerAuthService.kt`, `test/.../BarOwnerAuthServiceTest.kt`, `test/.../BarOwnerServiceTest.kt`
 - Modify: `application-local.yml`, `application-test.yml`, `docker-compose.yml`
 
-- [ ] **Step 1: 구 bar/barowner 패키지 삭제**
+- [x] **Step 1: 구 bar/barowner 패키지 삭제**
 
 ```bash
 rm -rf backend/src/main/kotlin/com/blinddate/bar/
@@ -1646,7 +1646,7 @@ rm -f backend/src/main/kotlin/com/blinddate/auth/service/BarOwnerAuthService.kt
 rm -f backend/src/test/kotlin/com/blinddate/auth/service/BarOwnerAuthServiceTest.kt
 ```
 
-- [ ] **Step 2: 전체 빌드 확인 (구 패키지 삭제 후)**
+- [x] **Step 2: 전체 빌드 확인 (구 패키지 삭제 후)**
 
 Run: `cd backend && ./gradlew compileKotlin 2>&1 | tail -5`
 Expected: BUILD SUCCESSFUL (모든 참조가 이미 새 패키지로 이전됨)
@@ -1658,20 +1658,20 @@ grep -r "import com.blinddate.bar\." backend/src/ || echo "No remaining bar impo
 grep -r "import com.blinddate.barowner\." backend/src/ || echo "No remaining barowner imports"
 ```
 
-- [ ] **Step 3: application 설정 파일 정리**
+- [x] **Step 3: application 설정 파일 정리**
 
 테이블명 변경은 JPA `@Table(name = "cafe")` 어노테이션으로 처리되므로 설정 파일 변경 불필요할 수 있음. 확인 후 필요시 수정.
 
-- [ ] **Step 4: docker-compose.yml 정리**
+- [x] **Step 4: docker-compose.yml 정리**
 
 불필요한 환경변수 확인/제거.
 
-- [ ] **Step 5: 전체 빌드 + 테스트 최종 확인**
+- [x] **Step 5: 전체 빌드 + 테스트 최종 확인**
 
 Run: `cd backend && ./gradlew clean build`
 Expected: BUILD SUCCESSFUL, 모든 테스트 PASS
 
-- [ ] **Step 6: 최종 커밋**
+- [x] **Step 6: 최종 커밋**
 
 ```bash
 git add -A && git commit -m "chore: remove legacy bar/barowner packages and cleanup configs"
