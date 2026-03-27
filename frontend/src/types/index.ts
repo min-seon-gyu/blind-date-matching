@@ -110,3 +110,79 @@ export interface AuthUser {
   hasProfile?: boolean
   cafeId?: number
 }
+
+export interface Organizer {
+  id: number
+  name: string
+  phoneNumber: string
+  email: string
+  description: string | null
+  commissionRate: number
+}
+
+export interface CafeOwner {
+  id: number
+  name: string
+  phoneNumber: string
+  email: string
+  cafeId: number
+}
+
+export type PartnershipStatus = 'PENDING' | 'ACTIVE' | 'TERMINATED'
+export type MarketplacePostType = 'OFFER_SPACE' | 'SEEK_SPACE'
+export type CommissionStatus = 'PENDING' | 'INVOICED' | 'PAID'
+export type CommissionTargetType = 'ORGANIZER' | 'CAFE_OWNER'
+
+export interface Partnership {
+  id: number
+  cafeId: number
+  cafeName: string
+  organizerId: number
+  organizerName: string
+  status: PartnershipStatus
+  requestedBy: 'CAFE_OWNER' | 'ORGANIZER'
+  message: string | null
+  createdAt: string
+}
+
+export interface MarketplacePost {
+  id: number
+  type: MarketplacePostType
+  authorType: 'CAFE_OWNER' | 'ORGANIZER'
+  authorId: number
+  authorName: string
+  title: string
+  description: string
+  region: string
+  capacity: number | null
+  preferredDate: string | null
+  imageUrls: string[]
+  cafeId: number | null
+  cafeAddress: string | null
+  cafeLatitude: number | null
+  cafeLongitude: number | null
+  isActive: boolean
+  createdAt: string
+}
+
+export interface Commission {
+  id: number
+  cafeId: number
+  cafeName: string
+  eventId: number
+  eventTitle: string
+  targetType: CommissionTargetType
+  targetId: number
+  participantCount: number
+  eventPrice: number
+  commissionRate: number
+  unitPrice: number
+  totalAmount: number
+  status: CommissionStatus
+  invoicedAt: string | null
+  paidAt: string | null
+}
+
+export interface DashboardStats {
+  [key: string]: number | string
+}
