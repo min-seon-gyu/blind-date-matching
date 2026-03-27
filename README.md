@@ -30,7 +30,11 @@ Tailwind CSS v4 + shadcn/ui 설정. 참가자 전체 10개 페이지 (로그인,
 
 - 구현 계획: `docs/superpowers/plans/2026-03-27-frontend-participant.md`
 
-### Phase 2-3b: 프론트엔드 주관자 + 카페 주인 + 관리자 + 마켓플레이스 (다음)
+### Phase 2-3b: 프론트엔드 주관자 + 카페 주인 + 관리자 + 마켓플레이스 (완료)
+
+주관자 8페이지, 카페 주인 7페이지, 관리자 6페이지, 마켓플레이스 4페이지. 데스크톱 사이드바 레이아웃.
+
+- 구현 계획: `docs/superpowers/plans/2026-03-27-frontend-remaining.md`
 
 React 19 + shadcn/ui + Tailwind CSS. 참가자(모바일) + 주관자/카페주인/관리자(데스크톱) 전체 구현.
 
