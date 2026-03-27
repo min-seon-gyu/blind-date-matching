@@ -3,7 +3,7 @@ import { useAuthStore } from '@/stores/authStore'
 import type { UserType } from '@/types'
 
 interface ProtectedRouteProps {
-  userType: UserType
+  userType: UserType | UserType[]
 }
 
 export default function ProtectedRoute({ userType }: ProtectedRouteProps) {
@@ -14,12 +14,13 @@ export default function ProtectedRoute({ userType }: ProtectedRouteProps) {
     return <Navigate to="/login" state={{ from: location }} replace />
   }
 
-  if (user.userType !== userType) {
+  const allowedTypes = Array.isArray(userType) ? userType : [userType]
+  if (!allowedTypes.includes(user.userType)) {
     return <Navigate to="/login" replace />
   }
 
   if (
-    userType === 'PARTICIPANT' &&
+    user.userType === 'PARTICIPANT' &&
     user.hasProfile === false &&
     location.pathname !== '/profile/setup'
   ) {
