@@ -24,7 +24,13 @@ BarOwner를 CafeOwner(장소 제공) + Organizer(이벤트 운영)로 분리. Ba
 
 - 구현 계획: `docs/superpowers/plans/2026-03-27-backend-marketplace.md`
 
-### Phase 2-3: 프론트엔드 (다음)
+### Phase 2-3a: 프론트엔드 공통 + 참가자 웹 (완료)
+
+Tailwind CSS v4 + shadcn/ui 설정. 참가자 전체 10개 페이지 (로그인, 프로필, 카페, 이벤트, 선택, 매칭, 마이페이지, 알림). 카카오맵 연동.
+
+- 구현 계획: `docs/superpowers/plans/2026-03-27-frontend-participant.md`
+
+### Phase 2-3b: 프론트엔드 주관자 + 카페 주인 + 관리자 + 마켓플레이스 (다음)
 
 React 19 + shadcn/ui + Tailwind CSS. 참가자(모바일) + 주관자/카페주인/관리자(데스크톱) 전체 구현.
 
