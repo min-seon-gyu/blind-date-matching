@@ -123,4 +123,81 @@ class MarketplaceServiceTest {
         assertEquals(1, results.size)
         assertEquals(MarketplacePostType.OFFER_SPACE, results[0].type)
     }
+
+    @Test
+    fun `deletePost soft deletes by setting isActive to false`() {
+        val principal = UserPrincipal(id = 1L, userType = UserType.CAFE_OWNER, cafeId = 10L)
+        val post = MarketplacePost(
+            type = MarketplacePostType.OFFER_SPACE,
+            authorType = MarketplaceAuthorType.CAFE_OWNER,
+            authorId = 1L, title = "To Delete", description = "Desc",
+            region = "강남", cafeId = 10L
+        )
+
+        every { postRepo.findById(1L) } returns Optional.of(post)
+
+        service.deletePost(principal, 1L)
+
+        assertFalse(post.isActive)
+    }
+
+    @Test
+    fun `getPost returns post with author name`() {
+        val post = MarketplacePost(
+            type = MarketplacePostType.OFFER_SPACE,
+            authorType = MarketplaceAuthorType.CAFE_OWNER,
+            authorId = 1L, title = "Space Available", description = "Nice space",
+            region = "강남", cafeId = 10L
+        )
+        val cafeOwner = CafeOwner(cafe = cafe, name = "카페주인", phoneNumber = "010", email = "o@t.com", password = "p")
+
+        every { postRepo.findById(1L) } returns Optional.of(post)
+        every { cafeOwnerRepo.findById(1L) } returns Optional.of(cafeOwner)
+        every { cafeRepo.findById(10L) } returns Optional.of(cafe)
+
+        val result = service.getPost(1L)
+
+        assertEquals("Space Available", result.title)
+        assertEquals("카페주인", result.authorName)
+    }
+
+    @Test
+    fun `getMyPosts returns only own posts`() {
+        val principal = UserPrincipal(id = 2L, userType = UserType.ORGANIZER)
+        val post = MarketplacePost(
+            type = MarketplacePostType.SEEK_SPACE,
+            authorType = MarketplaceAuthorType.ORGANIZER,
+            authorId = 2L, title = "Looking for space", description = "Desc",
+            region = "홍대"
+        )
+        val organizer = Organizer(name = "Org", phoneNumber = "010", email = "org@t.com", password = "p")
+
+        every { postRepo.findByAuthorTypeAndAuthorIdAndIsActiveTrue(MarketplaceAuthorType.ORGANIZER, 2L) } returns listOf(post)
+        every { organizerRepo.findById(2L) } returns Optional.of(organizer)
+
+        val results = service.getMyPosts(principal)
+
+        assertEquals(1, results.size)
+        assertEquals("Looking for space", results[0].title)
+    }
+
+    @Test
+    fun `getPosts filters by region`() {
+        val post = MarketplacePost(
+            type = MarketplacePostType.OFFER_SPACE,
+            authorType = MarketplaceAuthorType.CAFE_OWNER,
+            authorId = 1L, title = "강남 Space", description = "Desc",
+            region = "강남", cafeId = 10L
+        )
+        val cafeOwner = CafeOwner(cafe = cafe, name = "Owner", phoneNumber = "010", email = "o@t.com", password = "p")
+
+        every { postRepo.findByRegionAndIsActiveTrue("강남") } returns listOf(post)
+        every { cafeOwnerRepo.findById(1L) } returns Optional.of(cafeOwner)
+        every { cafeRepo.findById(10L) } returns Optional.of(cafe)
+
+        val results = service.getPosts(null, "강남")
+
+        assertEquals(1, results.size)
+        assertEquals("강남", results[0].region)
+    }
 }

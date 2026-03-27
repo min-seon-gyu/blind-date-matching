@@ -23,6 +23,7 @@ import com.blinddate.participant.repository.ParticipantRepository
 import io.mockk.*
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertDoesNotThrow
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -104,5 +105,79 @@ class MatchingServiceTest {
         val response = service.getMatchResult(event.id, male1.id)
         assertEquals(1, response.size)
         assertEquals("Female1", response[0].matchedNickname)
+    }
+
+    @Test
+    fun `submitChoices succeeds with valid choices`() {
+        // Use separate mock instances to avoid id=0 collision
+        val maleProfile = ParticipantProfile(participant = male1, name = "M", age = 28, gender = Gender.MALE, job = "dev")
+        val femaleProfile = ParticipantProfile(participant = female1, name = "F", age = 26, gender = Gender.FEMALE, job = "design")
+
+        every { eventRepo.findById(event.id) } returns Optional.of(event)
+        every { applicationRepo.findByParticipantIdAndEventId(any(), any()) } returns Optional.of(
+            Application(participant = male1, event = event, status = ApplicationStatus.APPROVED)
+        )
+        // Since all ids are 0 (BaseEntity default), use returnsMany to control sequential calls
+        every { profileRepo.findByParticipantId(any()) } returnsMany listOf(
+            Optional.of(maleProfile),   // first call: getting myProfile (male)
+            Optional.of(femaleProfile)   // second call: getting chosen profile (female)
+        )
+        every { participantRepo.findById(any()) } returnsMany listOf(
+            Optional.of(male1),
+            Optional.of(female1)
+        )
+        every { choiceRepo.deleteByEventIdAndChooserId(any(), any()) } just runs
+        every { choiceRepo.saveAll(any<List<Choice>>()) } answers { firstArg() }
+
+        assertDoesNotThrow {
+            service.submitChoices(event.id, male1.id, listOf(female1.id))
+        }
+        verify { choiceRepo.saveAll(any<List<Choice>>()) }
+    }
+
+    @Test
+    fun `submitChoices fails when deadline passed`() {
+        val pastDeadlineEvent = Event(
+            cafe = cafe, organizer = organizer, title = "Past", date = LocalDate.of(2026, 4, 3),
+            time = LocalTime.of(19, 0), price = 30000, maleCapacity = 10, femaleCapacity = 10,
+            maxChoices = 3, choiceDeadline = LocalDateTime.of(2020, 1, 1, 0, 0)
+        )
+        every { eventRepo.findById(any()) } returns Optional.of(pastDeadlineEvent)
+
+        assertThrows(BadRequestException::class.java) {
+            service.submitChoices(pastDeadlineEvent.id, male1.id, listOf(female1.id))
+        }
+    }
+
+    @Test
+    fun `processMatching with no choices produces no matches`() {
+        // Empty choices -> no matches
+        every { choiceRepo.findByEventId(event.id) } returns emptyList()
+
+        service.processMatching(event.id)
+
+        verify(exactly = 0) { matchResultRepo.save(any()) }
+    }
+
+    @Test
+    fun `getParticipants returns opposite gender list`() {
+        val maleProfile = ParticipantProfile(participant = male1, name = "M", age = 28, gender = Gender.MALE, job = "dev")
+        val femaleProfile = ParticipantProfile(participant = female1, name = "F", age = 26, gender = Gender.FEMALE, job = "design")
+
+        // First call to get myProfile (male), subsequent calls for opposite gender participants
+        every { profileRepo.findByParticipantId(any()) } returnsMany listOf(
+            Optional.of(maleProfile),
+            Optional.of(femaleProfile)
+        )
+
+        val femaleNumber = ParticipantNumber(event = event, participant = female1, number = 1, gender = Gender.FEMALE)
+        every { participantNumberRepo.findByEventIdAndGender(event.id, Gender.FEMALE) } returns listOf(femaleNumber)
+
+        val result = service.getParticipants(event.id, male1.id)
+
+        assertEquals(1, result.size)
+        assertEquals("FEMALE", result[0].gender)
+        assertEquals(1, result[0].number)
+        assertEquals(26, result[0].age)
     }
 }
