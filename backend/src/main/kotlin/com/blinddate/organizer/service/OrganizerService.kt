@@ -11,6 +11,7 @@ import com.blinddate.event.repository.EventRepository
 import com.blinddate.organizer.dto.CreateEventRequest
 import com.blinddate.organizer.dto.UpdateEventRequest
 import com.blinddate.organizer.repository.OrganizerRepository
+import com.blinddate.partnership.service.PartnershipService
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
@@ -20,10 +21,15 @@ import java.time.LocalDateTime
 class OrganizerService(
     private val organizerRepository: OrganizerRepository,
     private val cafeRepository: CafeRepository,
-    private val eventRepository: EventRepository
+    private val eventRepository: EventRepository,
+    private val partnershipService: PartnershipService
 ) {
     @Transactional
     fun createEvent(organizerId: Long, request: CreateEventRequest): EventResponse {
+        if (!partnershipService.hasActivePartnership(request.cafeId, organizerId)) {
+            throw BadRequestException("먼저 카페와 제휴를 맺어주세요")
+        }
+
         val organizer = organizerRepository.findById(organizerId)
             .orElseThrow { NotFoundException("주최자를 찾을 수 없습니다") }
         val cafe = cafeRepository.findById(request.cafeId)
