@@ -1,19 +1,14 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import {
-  LayoutDashboard,
-  Calendar,
-  Handshake,
-  Receipt,
-  Store,
-  Bell,
-  Coffee,
-  Users,
-} from 'lucide-react'
 
 import ProtectedRoute from '@/components/common/ProtectedRoute'
 import ParticipantLayout from '@/components/layout/ParticipantLayout'
 import DashboardLayout from '@/components/layout/DashboardLayout'
+import MarketplaceLayout, {
+  organizerMenuItems,
+  cafeOwnerMenuItems,
+  adminMenuItems,
+} from '@/components/layout/MarketplaceLayout'
 
 // Participant pages
 import LoginPage from '@/pages/participant/LoginPage'
@@ -69,33 +64,6 @@ const queryClient = new QueryClient({
     },
   },
 })
-
-const organizerMenuItems = [
-  { label: '대시보드', path: '/organizer/dashboard', icon: <LayoutDashboard className="w-5 h-5" /> },
-  { label: '이벤트 관리', path: '/organizer/events', icon: <Calendar className="w-5 h-5" /> },
-  { label: '제휴 카페', path: '/organizer/partnerships', icon: <Handshake className="w-5 h-5" /> },
-  { label: '수수료', path: '/organizer/commissions', icon: <Receipt className="w-5 h-5" /> },
-  { label: '마켓플레이스', path: '/marketplace', icon: <Store className="w-5 h-5" /> },
-  { label: '알림', path: '/organizer/notifications', icon: <Bell className="w-5 h-5" /> },
-]
-
-const cafeOwnerMenuItems = [
-  { label: '대시보드', path: '/cafe-owner/dashboard', icon: <LayoutDashboard className="w-5 h-5" /> },
-  { label: '내 카페', path: '/cafe-owner/my-cafe', icon: <Coffee className="w-5 h-5" /> },
-  { label: '이벤트', path: '/cafe-owner/events', icon: <Calendar className="w-5 h-5" /> },
-  { label: '제휴 관리', path: '/cafe-owner/partnerships', icon: <Handshake className="w-5 h-5" /> },
-  { label: '수수료', path: '/cafe-owner/commissions', icon: <Receipt className="w-5 h-5" /> },
-  { label: '마켓플레이스', path: '/marketplace', icon: <Store className="w-5 h-5" /> },
-  { label: '알림', path: '/cafe-owner/notifications', icon: <Bell className="w-5 h-5" /> },
-]
-
-const adminMenuItems = [
-  { label: '대시보드', path: '/admin/dashboard', icon: <LayoutDashboard className="w-5 h-5" /> },
-  { label: '카페 관리', path: '/admin/cafes', icon: <Coffee className="w-5 h-5" /> },
-  { label: '주관자 관리', path: '/admin/organizers', icon: <Users className="w-5 h-5" /> },
-  { label: '수수료', path: '/admin/commissions', icon: <Receipt className="w-5 h-5" /> },
-  { label: '제휴 현황', path: '/admin/partnerships', icon: <Handshake className="w-5 h-5" /> },
-]
 
 function App() {
   return (
@@ -162,7 +130,7 @@ function App() {
 
           {/* Marketplace (accessible by Organizer and Cafe Owner) */}
           <Route element={<ProtectedRoute userType={['ORGANIZER', 'CAFE_OWNER']} />}>
-            <Route element={<DashboardLayout role="organizer" menuItems={organizerMenuItems} />}>
+            <Route element={<MarketplaceLayout />}>
               <Route path="/marketplace" element={<MarketplacePage />} />
               <Route path="/marketplace/new" element={<CreatePostPage />} />
               <Route path="/marketplace/:id" element={<PostDetailPage />} />
