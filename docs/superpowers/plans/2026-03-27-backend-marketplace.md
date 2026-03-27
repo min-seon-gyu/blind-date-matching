@@ -56,7 +56,7 @@ backend/src/test/kotlin/com/blinddate/organizer/service/OrganizerServiceTest.kt 
 **Files:**
 - Create: `partnership/entity/PartnershipStatus.kt`, `partnership/entity/PartnershipRequester.kt`, `partnership/entity/Partnership.kt`, `partnership/repository/PartnershipRepository.kt`
 
-- [ ] **Step 1: PartnershipStatus + PartnershipRequester enum 생성**
+- [x] **Step 1: PartnershipStatus + PartnershipRequester enum 생성**
 
 ```kotlin
 // partnership/entity/PartnershipStatus.kt
@@ -70,7 +70,7 @@ package com.blinddate.partnership.entity
 enum class PartnershipRequester { CAFE_OWNER, ORGANIZER }
 ```
 
-- [ ] **Step 2: Partnership 엔티티 생성**
+- [x] **Step 2: Partnership 엔티티 생성**
 
 ```kotlin
 // partnership/entity/Partnership.kt
@@ -109,7 +109,7 @@ class Partnership(
 ) : BaseEntity()
 ```
 
-- [ ] **Step 3: PartnershipRepository 생성**
+- [x] **Step 3: PartnershipRepository 생성**
 
 ```kotlin
 // partnership/repository/PartnershipRepository.kt
@@ -128,12 +128,12 @@ interface PartnershipRepository : JpaRepository<Partnership, Long> {
 }
 ```
 
-- [ ] **Step 4: 빌드 확인**
+- [x] **Step 4: 빌드 확인**
 
 Run: `cd backend && ./gradlew compileKotlin`
 Expected: BUILD SUCCESSFUL
 
-- [ ] **Step 5: 커밋**
+- [x] **Step 5: 커밋**
 
 ```bash
 git add -A && git commit -m "feat: add Partnership entity, enums, and repository"
@@ -146,7 +146,7 @@ git add -A && git commit -m "feat: add Partnership entity, enums, and repository
 **Files:**
 - Create: `marketplace/entity/MarketplacePostType.kt`, `marketplace/entity/MarketplaceAuthorType.kt`, `marketplace/entity/MarketplacePost.kt`, `marketplace/repository/MarketplacePostRepository.kt`
 
-- [ ] **Step 1: Enum 생성**
+- [x] **Step 1: Enum 생성**
 
 ```kotlin
 // marketplace/entity/MarketplacePostType.kt
@@ -160,7 +160,7 @@ package com.blinddate.marketplace.entity
 enum class MarketplaceAuthorType { CAFE_OWNER, ORGANIZER }
 ```
 
-- [ ] **Step 2: MarketplacePost 엔티티 생성**
+- [x] **Step 2: MarketplacePost 엔티티 생성**
 
 ```kotlin
 // marketplace/entity/MarketplacePost.kt
@@ -205,7 +205,7 @@ class MarketplacePost(
 ) : BaseEntity()
 ```
 
-- [ ] **Step 3: MarketplacePostRepository 생성**
+- [x] **Step 3: MarketplacePostRepository 생성**
 
 ```kotlin
 // marketplace/repository/MarketplacePostRepository.kt
@@ -225,12 +225,12 @@ interface MarketplacePostRepository : JpaRepository<MarketplacePost, Long> {
 }
 ```
 
-- [ ] **Step 4: 빌드 확인**
+- [x] **Step 4: 빌드 확인**
 
 Run: `cd backend && ./gradlew compileKotlin`
 Expected: BUILD SUCCESSFUL
 
-- [ ] **Step 5: 커밋**
+- [x] **Step 5: 커밋**
 
 ```bash
 git add -A && git commit -m "feat: add MarketplacePost entity, enums, and repository"
@@ -244,7 +244,7 @@ git add -A && git commit -m "feat: add MarketplacePost entity, enums, and reposi
 - Create: `partnership/dto/PartnershipDtos.kt`, `partnership/service/PartnershipService.kt`
 - Test: `test/.../partnership/service/PartnershipServiceTest.kt`
 
-- [ ] **Step 1: PartnershipDtos 생성**
+- [x] **Step 1: PartnershipDtos 생성**
 
 ```kotlin
 // partnership/dto/PartnershipDtos.kt
@@ -278,7 +278,7 @@ data class PartnershipResponse(
 data class RequestPartnershipRequest(val message: String? = null)
 ```
 
-- [ ] **Step 2: PartnershipService 테스트 작성**
+- [x] **Step 2: PartnershipService 테스트 작성**
 
 테스트 케이스:
 1. 제휴 요청 성공 (ORGANIZER → CAFE_OWNER의 OFFER_SPACE 글)
@@ -288,12 +288,12 @@ data class RequestPartnershipRequest(val message: String? = null)
 5. 제휴 해지 성공 (ACTIVE → TERMINATED)
 6. 자기 글에 제휴 요청 거부
 
-- [ ] **Step 3: 테스트 실패 확인**
+- [x] **Step 3: 테스트 실패 확인**
 
 Run: `cd backend && ./gradlew test --tests "com.blinddate.partnership.service.*" 2>&1 | tail -5`
 Expected: FAIL
 
-- [ ] **Step 4: PartnershipService 구현**
+- [x] **Step 4: PartnershipService 구현**
 
 ```kotlin
 // partnership/service/PartnershipService.kt
@@ -400,12 +400,12 @@ class PartnershipService(
 }
 ```
 
-- [ ] **Step 5: 테스트 통과 확인**
+- [x] **Step 5: 테스트 통과 확인**
 
 Run: `cd backend && ./gradlew test --tests "com.blinddate.partnership.service.*" 2>&1 | tail -5`
 Expected: PASS
 
-- [ ] **Step 6: 커밋**
+- [x] **Step 6: 커밋**
 
 ```bash
 git add -A && git commit -m "feat: add PartnershipService with TDD (request, accept, reject, terminate)"
@@ -419,7 +419,7 @@ git add -A && git commit -m "feat: add PartnershipService with TDD (request, acc
 - Create: `marketplace/dto/MarketplaceDtos.kt`, `marketplace/service/MarketplaceService.kt`
 - Test: `test/.../marketplace/service/MarketplaceServiceTest.kt`
 
-- [ ] **Step 1: MarketplaceDtos 생성**
+- [x] **Step 1: MarketplaceDtos 생성**
 
 ```kotlin
 // marketplace/dto/MarketplaceDtos.kt
@@ -469,7 +469,7 @@ data class MarketplacePostResponse(
 )
 ```
 
-- [ ] **Step 2: MarketplaceService 테스트 작성**
+- [x] **Step 2: MarketplaceService 테스트 작성**
 
 테스트 케이스:
 1. CAFE_OWNER가 OFFER_SPACE 글 작성 성공
@@ -479,9 +479,9 @@ data class MarketplacePostResponse(
 5. 작성자 본인만 글 삭제 가능 (soft delete: isActive=false)
 6. 글 목록 조회 (type 필터, region 필터)
 
-- [ ] **Step 3: 테스트 실패 확인**
+- [x] **Step 3: 테스트 실패 확인**
 
-- [ ] **Step 4: MarketplaceService 구현**
+- [x] **Step 4: MarketplaceService 구현**
 
 주요 로직:
 - `createPost(principal, request)`: authorType/type 매칭 검증, CAFE_OWNER이면 cafeId를 principal.cafeId에서 설정
@@ -493,9 +493,9 @@ data class MarketplacePostResponse(
 
 authorName 조회: authorType에 따라 CafeOwnerRepository 또는 OrganizerRepository에서 이름 조회.
 
-- [ ] **Step 5: 테스트 통과 확인**
+- [x] **Step 5: 테스트 통과 확인**
 
-- [ ] **Step 6: 커밋**
+- [x] **Step 6: 커밋**
 
 ```bash
 git add -A && git commit -m "feat: add MarketplaceService with TDD (CRUD, access control)"
@@ -508,7 +508,7 @@ git add -A && git commit -m "feat: add MarketplaceService with TDD (CRUD, access
 **Files:**
 - Create: `marketplace/controller/MarketplaceController.kt`
 
-- [ ] **Step 1: MarketplaceController 구현**
+- [x] **Step 1: MarketplaceController 구현**
 
 ```kotlin
 // marketplace/controller/MarketplaceController.kt
@@ -570,11 +570,11 @@ class MarketplaceController(
 }
 ```
 
-- [ ] **Step 2: 빌드 확인**
+- [x] **Step 2: 빌드 확인**
 
 Run: `cd backend && ./gradlew compileKotlin`
 
-- [ ] **Step 3: 커밋**
+- [x] **Step 3: 커밋**
 
 ```bash
 git add -A && git commit -m "feat: add MarketplaceController with CRUD and partnership request"
@@ -589,7 +589,7 @@ git add -A && git commit -m "feat: add MarketplaceController with CRUD and partn
 - Create: `organizer/controller/OrganizerPartnershipController.kt`
 - Create: `admin/controller/AdminPartnershipController.kt`
 
-- [ ] **Step 1: CafeOwnerPartnershipController 구현**
+- [x] **Step 1: CafeOwnerPartnershipController 구현**
 
 ```kotlin
 package com.blinddate.cafeowner.controller
@@ -620,7 +620,7 @@ class CafeOwnerPartnershipController(private val partnershipService: Partnership
 }
 ```
 
-- [ ] **Step 2: OrganizerPartnershipController 구현**
+- [x] **Step 2: OrganizerPartnershipController 구현**
 
 ```kotlin
 package com.blinddate.organizer.controller
@@ -639,7 +639,7 @@ class OrganizerPartnershipController(private val partnershipService: Partnership
 }
 ```
 
-- [ ] **Step 3: AdminPartnershipController 구현**
+- [x] **Step 3: AdminPartnershipController 구현**
 
 ```kotlin
 package com.blinddate.admin.controller
@@ -655,11 +655,11 @@ class AdminPartnershipController(private val partnershipService: PartnershipServ
 }
 ```
 
-- [ ] **Step 4: 빌드 확인**
+- [x] **Step 4: 빌드 확인**
 
 Run: `cd backend && ./gradlew compileKotlin`
 
-- [ ] **Step 5: 커밋**
+- [x] **Step 5: 커밋**
 
 ```bash
 git add -A && git commit -m "feat: add Partnership management controllers (CafeOwner, Organizer, Admin)"
@@ -675,15 +675,15 @@ git add -A && git commit -m "feat: add Partnership management controllers (CafeO
 - Modify: `organizer/service/OrganizerService.kt`
 - Test: `test/.../organizer/service/OrganizerServiceTest.kt`
 
-- [ ] **Step 1: OrganizerServiceTest에 Partnership 검증 테스트 추가**
+- [x] **Step 1: OrganizerServiceTest에 Partnership 검증 테스트 추가**
 
 테스트 케이스:
 1. ACTIVE Partnership 있을 때 이벤트 생성 성공
 2. Partnership 없을 때 이벤트 생성 실패 ("먼저 카페와 제휴를 맺어주세요")
 
-- [ ] **Step 2: 테스트 실패 확인**
+- [x] **Step 2: 테스트 실패 확인**
 
-- [ ] **Step 3: OrganizerService.createEvent에 Partnership 검증 추가**
+- [x] **Step 3: OrganizerService.createEvent에 Partnership 검증 추가**
 
 ```kotlin
 // OrganizerService.createEvent 시작 부분에 추가:
@@ -694,12 +694,12 @@ if (!partnershipService.hasActivePartnership(request.cafeId, organizerId)) {
 
 OrganizerService 생성자에 `PartnershipService` 의존성 추가.
 
-- [ ] **Step 4: 테스트 통과 확인**
+- [x] **Step 4: 테스트 통과 확인**
 
 Run: `cd backend && ./gradlew test --tests "com.blinddate.organizer.service.*" 2>&1 | tail -5`
 Expected: PASS
 
-- [ ] **Step 5: 커밋**
+- [x] **Step 5: 커밋**
 
 ```bash
 git add -A && git commit -m "feat: add Partnership validation on event creation"
@@ -709,12 +709,12 @@ git add -A && git commit -m "feat: add Partnership validation on event creation"
 
 ## Task 8: 전체 빌드 + 테스트 확인
 
-- [ ] **Step 1: 전체 빌드**
+- [x] **Step 1: 전체 빌드**
 
 Run: `cd backend && ./gradlew clean build`
 Expected: BUILD SUCCESSFUL, 모든 테스트 PASS
 
-- [ ] **Step 2: 최종 커밋**
+- [x] **Step 2: 최종 커밋**
 
 ```bash
 git add -A && git commit -m "chore: verify marketplace feature complete - all tests pass"

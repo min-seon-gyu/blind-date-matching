@@ -18,11 +18,13 @@ BarOwner를 CafeOwner(장소 제공) + Organizer(이벤트 운영)로 분리. Ba
 - 스펙: `docs/superpowers/specs/2026-03-23-frontend-design.md` (Section 1)
 - 구현 계획: `docs/superpowers/plans/2026-03-23-backend-restructure.md`
 
-### Phase 2-2: 백엔드 마켓플레이스 (다음)
+### Phase 2-2: 백엔드 마켓플레이스 (완료)
 
-제휴 마켓플레이스 (Partnership, MarketplacePost) 추가.
+제휴 마켓플레이스 (Partnership, MarketplacePost) 추가. 이벤트 생성 시 ACTIVE Partnership 검증.
 
-### Phase 2-3: 프론트엔드 (예정)
+- 구현 계획: `docs/superpowers/plans/2026-03-27-backend-marketplace.md`
+
+### Phase 2-3: 프론트엔드 (다음)
 
 React 19 + shadcn/ui + Tailwind CSS. 참가자(모바일) + 주관자/카페주인/관리자(데스크톱) 전체 구현.
 
@@ -78,11 +80,13 @@ blind-date-matching/
 │       ├── matching/          # 참가번호, 선택, 매칭 알고리즘
 │       ├── notification/      # 알림 (DB + 카카오 채널 메시지)
 │       ├── action/            # ActionToken (카톡 버튼 액션)
+│       ├── partnership/        # 제휴 관리 (카페-주관자 연결)
+│       ├── marketplace/       # 마켓플레이스 (장소 제공/구함 글)
 │       ├── commission/        # 수수료 추적
 │       ├── admin/             # 플랫폼 관리자 API
 │       ├── scheduler/         # 이벤트 상태 전환, 매칭, 리마인더
 │       └── common/            # 설정, 공통 엔티티, 예외 처리
-├── frontend/                  # React SPA (Phase 2에서 전면 재작성)
+├── frontend/                  # React SPA (Phase 2-3에서 전면 구현)
 ├── docs/
 │   ├── superpowers/specs/     # 설계 문서
 │   └── superpowers/plans/     # 구현 계획
