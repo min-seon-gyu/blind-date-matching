@@ -6,6 +6,7 @@ import com.blinddate.application.repository.ApplicationRepository
 import com.blinddate.cafe.entity.Cafe
 import com.blinddate.common.exception.BadRequestException
 import com.blinddate.common.exception.ConflictException
+import com.blinddate.common.exception.ForbiddenException
 import com.blinddate.common.exception.NotFoundException
 import com.blinddate.event.entity.Event
 import com.blinddate.event.entity.EventStatus
@@ -132,5 +133,37 @@ class ApplicationServiceTest {
         service.reject(organizer.id, 1L, "프로필 미흡")
         assertEquals(ApplicationStatus.REJECTED, app.status)
         assertEquals("프로필 미흡", app.rejectReason)
+    }
+
+    @Test
+    fun `getByEventForOrganizer returns applications for own event`() {
+        val app = Application(participant = participant, event = event, status = ApplicationStatus.PENDING)
+        every { eventRepo.findById(event.id) } returns Optional.of(event)
+        every { applicationRepo.findByEventId(event.id) } returns listOf(app)
+
+        val result = service.getByEventForOrganizer(organizer.id, event.id)
+
+        assertEquals(1, result.size)
+        assertEquals(ApplicationStatus.PENDING, result[0].status)
+    }
+
+    @Test
+    fun `cancel fails when status is not PENDING`() {
+        val app = Application(participant = participant, event = event, status = ApplicationStatus.APPROVED)
+        every { applicationRepo.findById(1L) } returns Optional.of(app)
+
+        assertThrows(BadRequestException::class.java) {
+            service.cancel(participant.id, 1L)
+        }
+    }
+
+    @Test
+    fun `approve fails when wrong organizer`() {
+        val app = Application(participant = participant, event = event, status = ApplicationStatus.PENDING)
+        every { applicationRepo.findById(1L) } returns Optional.of(app)
+
+        assertThrows(ForbiddenException::class.java) {
+            service.approve(99L, 1L)
+        }
     }
 }

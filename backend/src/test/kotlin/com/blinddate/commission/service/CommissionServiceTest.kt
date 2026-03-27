@@ -98,4 +98,55 @@ class CommissionServiceTest {
         every { commissionRepo.findById(1L) } returns Optional.of(commission)
         assertThrows(BadRequestException::class.java) { service.markPaid(1L) }
     }
+
+    @Test
+    fun `getByTargetType returns filtered commissions`() {
+        val commission = Commission(
+            cafe = cafe, event = event,
+            targetType = CommissionTargetType.ORGANIZER, targetId = 1L,
+            participantCount = 10, eventPrice = 30000, commissionRate = 15,
+            unitPrice = 4500, totalAmount = 45000
+        )
+        every { commissionRepo.findByTargetTypeAndTargetId(CommissionTargetType.ORGANIZER, 1L) } returns listOf(commission)
+
+        val result = service.getByTargetType(CommissionTargetType.ORGANIZER, 1L)
+
+        assertEquals(1, result.size)
+        assertEquals(CommissionTargetType.ORGANIZER, result[0].targetType)
+        assertEquals(45000, result[0].totalAmount)
+    }
+
+    @Test
+    fun `createForEvent calculates correct amounts for different rates`() {
+        val highRateCafe = Cafe(name = "High", address = "addr", slug = "high", commissionRate = 20)
+        val highRateOrganizer = Organizer(name = "Org", phoneNumber = "010", email = "org@test.com", password = "pass", commissionRate = 25)
+        val highRateEvent = Event(
+            cafe = highRateCafe, organizer = highRateOrganizer, title = "Premium",
+            date = LocalDate.of(2026, 4, 3), time = LocalTime.of(19, 0),
+            price = 50000, maleCapacity = 10, femaleCapacity = 10
+        )
+        val cafeOwner = CafeOwner(cafe = highRateCafe, name = "Owner", phoneNumber = "010", email = "o@t.com", password = "p")
+
+        every { eventRepo.findById(highRateEvent.id) } returns Optional.of(highRateEvent)
+        every { commissionRepo.existsByEventId(highRateEvent.id) } returns false
+        every { applicationRepo.countByEventIdAndStatus(highRateEvent.id, ApplicationStatus.APPROVED) } returns 20L
+        every { cafeOwnerRepo.findByCafeId(highRateCafe.id) } returns listOf(cafeOwner)
+        every { commissionRepo.save(any()) } answers { firstArg() }
+
+        val result = service.createForEvent(highRateEvent.id)
+
+        assertEquals(2, result.size)
+
+        // Organizer: rate 25, unitPrice = 50000*25/100 = 12500, total = 20*12500 = 250000
+        val orgCommission = result.first { it.targetType == CommissionTargetType.ORGANIZER }
+        assertEquals(25, orgCommission.commissionRate)
+        assertEquals(12500, orgCommission.unitPrice)
+        assertEquals(250000, orgCommission.totalAmount)
+
+        // Cafe: rate 20, unitPrice = 50000*20/100 = 10000, total = 20*10000 = 200000
+        val cafeCommission = result.first { it.targetType == CommissionTargetType.CAFE_OWNER }
+        assertEquals(20, cafeCommission.commissionRate)
+        assertEquals(10000, cafeCommission.unitPrice)
+        assertEquals(200000, cafeCommission.totalAmount)
+    }
 }

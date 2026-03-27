@@ -114,4 +114,57 @@ class PartnershipServiceTest {
         assertEquals(PartnershipStatus.TERMINATED, result.status)
         assertNotNull(result.terminatedAt)
     }
+
+    @Test
+    fun `getByCafeId returns partnerships for cafe`() {
+        val partnership = Partnership(
+            cafe = cafe, organizer = organizer,
+            requestedBy = PartnershipRequester.ORGANIZER,
+            status = PartnershipStatus.ACTIVE
+        )
+        every { partnershipRepo.findByCafeId(cafe.id) } returns listOf(partnership)
+
+        val results = service.getByCafeId(cafe.id)
+
+        assertEquals(1, results.size)
+        assertEquals(PartnershipStatus.ACTIVE, results[0].status)
+    }
+
+    @Test
+    fun `getByOrganizerId returns partnerships for organizer`() {
+        val partnership = Partnership(
+            cafe = cafe, organizer = organizer,
+            requestedBy = PartnershipRequester.ORGANIZER,
+            status = PartnershipStatus.PENDING
+        )
+        every { partnershipRepo.findByOrganizerId(organizer.id) } returns listOf(partnership)
+
+        val results = service.getByOrganizerId(organizer.id)
+
+        assertEquals(1, results.size)
+        assertEquals(PartnershipStatus.PENDING, results[0].status)
+    }
+
+    @Test
+    fun `hasActivePartnership returns true when active partnership exists`() {
+        val partnership = Partnership(
+            cafe = cafe, organizer = organizer,
+            requestedBy = PartnershipRequester.ORGANIZER,
+            status = PartnershipStatus.ACTIVE
+        )
+        every { partnershipRepo.findByCafeIdAndOrganizerIdAndStatusIn(cafe.id, organizer.id, listOf(PartnershipStatus.ACTIVE)) } returns partnership
+
+        val result = service.hasActivePartnership(cafe.id, organizer.id)
+
+        assertTrue(result)
+    }
+
+    @Test
+    fun `hasActivePartnership returns false when no active partnership`() {
+        every { partnershipRepo.findByCafeIdAndOrganizerIdAndStatusIn(cafe.id, organizer.id, listOf(PartnershipStatus.ACTIVE)) } returns null
+
+        val result = service.hasActivePartnership(cafe.id, organizer.id)
+
+        assertFalse(result)
+    }
 }
