@@ -7,7 +7,7 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 
 data class EventResponse(
-    val id: Long, val barId: Long, val title: String, val date: LocalDate, val time: LocalTime,
+    val id: Long, val cafeId: Long, val organizerId: Long, val title: String, val date: LocalDate, val time: LocalTime,
     val maleCapacity: Int, val femaleCapacity: Int, val currentMaleCount: Int, val currentFemaleCount: Int,
     val price: Int, val status: EventStatus, val description: String,
     val choiceDeadline: LocalDateTime?, val matchNotificationTime: LocalDateTime?,

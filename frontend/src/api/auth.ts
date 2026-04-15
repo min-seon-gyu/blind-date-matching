@@ -1,10 +1,17 @@
 import client from './client'
+import type { AuthUser } from '@/types'
 
-export const kakaoLogin = (code: string) =>
-  client.post('/auth/kakao/login', { code }).then((r) => r.data)
+interface AuthResponse {
+  accessToken: string
+  user: AuthUser
+}
 
-export const refresh = () =>
-  client.post('/auth/refresh').then((r) => r.data)
+export async function kakaoLogin(code: string): Promise<AuthResponse> {
+  const res = await client.post<AuthResponse>('/auth/kakao', { code })
+  return res.data
+}
 
-export const logout = () =>
-  client.post('/auth/logout').then((r) => r.data)
+export async function refresh(): Promise<AuthResponse> {
+  const res = await client.post<AuthResponse>('/auth/refresh')
+  return res.data
+}

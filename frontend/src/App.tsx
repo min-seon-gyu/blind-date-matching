@@ -1,32 +1,66 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
-import ProtectedRoute from './components/auth/ProtectedRoute'
-import AppLayout from './components/layout/AppLayout'
+import ProtectedRoute from '@/components/common/ProtectedRoute'
+import ParticipantLayout from '@/components/layout/ParticipantLayout'
+import DashboardLayout from '@/components/layout/DashboardLayout'
+import MarketplaceLayout, {
+  organizerMenuItems,
+  cafeOwnerMenuItems,
+  adminMenuItems,
+} from '@/components/layout/MarketplaceLayout'
 
-import LoginPage from './pages/LoginPage'
-import KakaoCallbackPage from './pages/KakaoCallbackPage'
-import ProfileSetupPage from './pages/ProfileSetupPage'
-import CalendarPage from './pages/CalendarPage'
-import EventDetailPage from './pages/EventDetailPage'
-import ChoicePage from './pages/ChoicePage'
-import MatchResultPage from './pages/MatchResultPage'
-import MyPage from './pages/MyPage'
-import MyApplicationsPage from './pages/MyApplicationsPage'
-import ProfileEditPage from './pages/ProfileEditPage'
-import BarStatusPage from './pages/BarStatusPage'
-import BarReservePage from './pages/BarReservePage'
-import NotificationsPage from './pages/NotificationsPage'
-import AdminEventsPage from './pages/admin/AdminEventsPage'
-import AdminApplicationsPage from './pages/admin/AdminApplicationsPage'
-import AdminMembersPage from './pages/admin/AdminMembersPage'
-import AdminBarPage from './pages/admin/AdminBarPage'
+// Participant pages
+import LoginPage from '@/pages/participant/LoginPage'
+import KakaoCallbackPage from '@/pages/participant/KakaoCallbackPage'
+import ProfileSetupPage from '@/pages/participant/ProfileSetupPage'
+import CafeMainPage from '@/pages/participant/CafeMainPage'
+import EventDetailPage from '@/pages/participant/EventDetailPage'
+import ChoicePage from '@/pages/participant/ChoicePage'
+import MatchResultPage from '@/pages/participant/MatchResultPage'
+import MyPage from '@/pages/participant/MyPage'
+import ProfileEditPage from '@/pages/participant/ProfileEditPage'
+import MyApplicationsPage from '@/pages/participant/MyApplicationsPage'
+import NotificationsPage from '@/pages/participant/NotificationsPage'
+
+// Organizer pages
+import OrganizerLoginPage from '@/pages/organizer/LoginPage'
+import OrganizerDashboardPage from '@/pages/organizer/DashboardPage'
+import OrganizerEventsPage from '@/pages/organizer/EventsPage'
+import OrganizerEventCreatePage from '@/pages/organizer/EventCreatePage'
+import OrganizerEventDetailPage from '@/pages/organizer/EventDetailPage'
+import OrganizerPartnershipsPage from '@/pages/organizer/PartnershipsPage'
+import OrganizerCommissionsPage from '@/pages/organizer/CommissionsPage'
+import OrganizerNotificationsPage from '@/pages/organizer/NotificationsPage'
+
+// Cafe Owner pages
+import CafeOwnerLoginPage from '@/pages/cafe-owner/LoginPage'
+import CafeOwnerDashboardPage from '@/pages/cafe-owner/DashboardPage'
+import MyCafePage from '@/pages/cafe-owner/MyCafePage'
+import CafeOwnerPartnershipsPage from '@/pages/cafe-owner/PartnershipsPage'
+import CafeOwnerEventsPage from '@/pages/cafe-owner/EventsPage'
+import CafeOwnerCommissionsPage from '@/pages/cafe-owner/CommissionsPage'
+import CafeOwnerNotificationsPage from '@/pages/cafe-owner/NotificationsPage'
+
+// Admin pages
+import AdminLoginPage from '@/pages/admin/LoginPage'
+import AdminDashboardPage from '@/pages/admin/DashboardPage'
+import AdminCafesPage from '@/pages/admin/CafesPage'
+import AdminOrganizersPage from '@/pages/admin/OrganizersPage'
+import AdminCommissionsPage from '@/pages/admin/CommissionsPage'
+import AdminPartnershipsPage from '@/pages/admin/PartnershipsPage'
+
+// Marketplace pages
+import MarketplacePage from '@/pages/marketplace/MarketplacePage'
+import CreatePostPage from '@/pages/marketplace/CreatePostPage'
+import PostDetailPage from '@/pages/marketplace/PostDetailPage'
+import EditPostPage from '@/pages/marketplace/EditPostPage'
 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: 1,
-      staleTime: 1000 * 30,
+      staleTime: 30000,
     },
   },
 })
@@ -36,25 +70,71 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <Routes>
+          {/* Public */}
           <Route path="/login" element={<LoginPage />} />
           <Route path="/auth/kakao/callback" element={<KakaoCallbackPage />} />
-          <Route element={<ProtectedRoute />}>
+          <Route path="/organizer/login" element={<OrganizerLoginPage />} />
+          <Route path="/cafe-owner/login" element={<CafeOwnerLoginPage />} />
+          <Route path="/admin/login" element={<AdminLoginPage />} />
+
+          {/* Participant (protected) */}
+          <Route element={<ProtectedRoute userType="PARTICIPANT" />}>
             <Route path="/profile/setup" element={<ProfileSetupPage />} />
-            <Route element={<AppLayout />}>
-              <Route path="/" element={<CalendarPage />} />
-              <Route path="/events/:id" element={<EventDetailPage />} />
-              <Route path="/events/:id/choose" element={<ChoicePage />} />
-              <Route path="/events/:id/result" element={<MatchResultPage />} />
-              <Route path="/mypage" element={<MyPage />} />
-              <Route path="/mypage/applications" element={<MyApplicationsPage />} />
-              <Route path="/mypage/profile" element={<ProfileEditPage />} />
-              <Route path="/bar" element={<BarStatusPage />} />
-              <Route path="/bar/reserve" element={<BarReservePage />} />
-              <Route path="/notifications" element={<NotificationsPage />} />
-              <Route path="/admin/events" element={<AdminEventsPage />} />
-              <Route path="/admin/applications" element={<AdminApplicationsPage />} />
-              <Route path="/admin/members" element={<AdminMembersPage />} />
-              <Route path="/admin/bar" element={<AdminBarPage />} />
+            <Route element={<ParticipantLayout />}>
+              <Route path="/cafes/:slug" element={<CafeMainPage />} />
+              <Route path="/cafes/:slug/events/:eventId" element={<EventDetailPage />} />
+              <Route path="/cafes/:slug/events/:eventId/choose" element={<ChoicePage />} />
+              <Route path="/cafes/:slug/events/:eventId/result" element={<MatchResultPage />} />
+              <Route path="/me" element={<MyPage />} />
+              <Route path="/me/profile" element={<ProfileEditPage />} />
+              <Route path="/me/applications" element={<MyApplicationsPage />} />
+              <Route path="/me/notifications" element={<NotificationsPage />} />
+            </Route>
+          </Route>
+
+          {/* Organizer (protected) */}
+          <Route element={<ProtectedRoute userType="ORGANIZER" />}>
+            <Route element={<DashboardLayout role="organizer" menuItems={organizerMenuItems} />}>
+              <Route path="/organizer/dashboard" element={<OrganizerDashboardPage />} />
+              <Route path="/organizer/events" element={<OrganizerEventsPage />} />
+              <Route path="/organizer/events/new" element={<OrganizerEventCreatePage />} />
+              <Route path="/organizer/events/:id" element={<OrganizerEventDetailPage />} />
+              <Route path="/organizer/partnerships" element={<OrganizerPartnershipsPage />} />
+              <Route path="/organizer/commissions" element={<OrganizerCommissionsPage />} />
+              <Route path="/organizer/notifications" element={<OrganizerNotificationsPage />} />
+            </Route>
+          </Route>
+
+          {/* Cafe Owner (protected) */}
+          <Route element={<ProtectedRoute userType="CAFE_OWNER" />}>
+            <Route element={<DashboardLayout role="cafe-owner" menuItems={cafeOwnerMenuItems} />}>
+              <Route path="/cafe-owner/dashboard" element={<CafeOwnerDashboardPage />} />
+              <Route path="/cafe-owner/my-cafe" element={<MyCafePage />} />
+              <Route path="/cafe-owner/events" element={<CafeOwnerEventsPage />} />
+              <Route path="/cafe-owner/partnerships" element={<CafeOwnerPartnershipsPage />} />
+              <Route path="/cafe-owner/commissions" element={<CafeOwnerCommissionsPage />} />
+              <Route path="/cafe-owner/notifications" element={<CafeOwnerNotificationsPage />} />
+            </Route>
+          </Route>
+
+          {/* Admin (protected) */}
+          <Route element={<ProtectedRoute userType="PLATFORM_ADMIN" />}>
+            <Route element={<DashboardLayout role="admin" menuItems={adminMenuItems} />}>
+              <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
+              <Route path="/admin/cafes" element={<AdminCafesPage />} />
+              <Route path="/admin/organizers" element={<AdminOrganizersPage />} />
+              <Route path="/admin/commissions" element={<AdminCommissionsPage />} />
+              <Route path="/admin/partnerships" element={<AdminPartnershipsPage />} />
+            </Route>
+          </Route>
+
+          {/* Marketplace (accessible by Organizer and Cafe Owner) */}
+          <Route element={<ProtectedRoute userType={['ORGANIZER', 'CAFE_OWNER']} />}>
+            <Route element={<MarketplaceLayout />}>
+              <Route path="/marketplace" element={<MarketplacePage />} />
+              <Route path="/marketplace/new" element={<CreatePostPage />} />
+              <Route path="/marketplace/:id" element={<PostDetailPage />} />
+              <Route path="/marketplace/:id/edit" element={<EditPostPage />} />
             </Route>
           </Route>
         </Routes>

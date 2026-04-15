@@ -1,12 +1,15 @@
 package com.blinddate.admin.service
 
-import com.blinddate.admin.dto.CreateBarRequest
-import com.blinddate.admin.dto.CreateBarOwnerRequest
-import com.blinddate.bar.entity.Bar
-import com.blinddate.bar.repository.BarRepository
-import com.blinddate.barowner.entity.BarOwner
-import com.blinddate.barowner.repository.BarOwnerRepository
+import com.blinddate.admin.dto.CreateCafeOwnerRequest
+import com.blinddate.admin.dto.CreateCafeRequest
+import com.blinddate.admin.dto.CreateOrganizerRequest
+import com.blinddate.cafe.entity.Cafe
+import com.blinddate.cafe.repository.CafeRepository
+import com.blinddate.cafeowner.entity.CafeOwner
+import com.blinddate.cafeowner.repository.CafeOwnerRepository
 import com.blinddate.common.exception.ConflictException
+import com.blinddate.organizer.entity.Organizer
+import com.blinddate.organizer.repository.OrganizerRepository
 import io.mockk.*
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
@@ -14,38 +17,48 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import java.util.Optional
 
 class AdminServiceTest {
-    private val barRepo = mockk<BarRepository>()
-    private val barOwnerRepo = mockk<BarOwnerRepository>()
+    private val cafeRepo = mockk<CafeRepository>()
+    private val cafeOwnerRepo = mockk<CafeOwnerRepository>()
+    private val organizerRepo = mockk<OrganizerRepository>()
     private val passwordEncoder = BCryptPasswordEncoder()
-    private val service = AdminService(barRepo, barOwnerRepo, passwordEncoder)
+    private val service = AdminService(cafeRepo, cafeOwnerRepo, organizerRepo, passwordEncoder)
 
     @Test
-    fun `createBar should save bar`() {
-        every { barRepo.existsBySlug("test-bar") } returns false
-        every { barRepo.save(any()) } answers { firstArg() }
+    fun `createCafe should save cafe`() {
+        every { cafeRepo.existsBySlug("test-cafe") } returns false
+        every { cafeRepo.save(any()) } answers { firstArg() }
 
-        val result = service.createBar(CreateBarRequest(name = "Test", address = "addr", slug = "test-bar"))
+        val result = service.createCafe(CreateCafeRequest(name = "Test", address = "addr", slug = "test-cafe"))
         assertEquals("Test", result.name)
-        assertEquals("test-bar", result.slug)
+        assertEquals("test-cafe", result.slug)
     }
 
     @Test
-    fun `createBar should throw for duplicate slug`() {
-        every { barRepo.existsBySlug("test-bar") } returns true
+    fun `createCafe should throw for duplicate slug`() {
+        every { cafeRepo.existsBySlug("test-cafe") } returns true
         assertThrows(ConflictException::class.java) {
-            service.createBar(CreateBarRequest(name = "Test", address = "addr", slug = "test-bar"))
+            service.createCafe(CreateCafeRequest(name = "Test", address = "addr", slug = "test-cafe"))
         }
     }
 
     @Test
-    fun `createBarOwner should hash password`() {
-        val bar = Bar(name = "Test", address = "addr", slug = "test")
-        every { barRepo.findById(1L) } returns Optional.of(bar)
-        every { barOwnerRepo.save(any()) } answers { firstArg<BarOwner>() }
+    fun `createCafeOwner should hash password`() {
+        val cafe = Cafe(name = "Test", address = "addr", slug = "test")
+        every { cafeRepo.findById(1L) } returns Optional.of(cafe)
+        every { cafeOwnerRepo.save(any()) } answers { firstArg<CafeOwner>() }
 
-        val request = CreateBarOwnerRequest(barId = 1L, name = "Owner", phoneNumber = "010", email = "o@t.com", password = "raw123")
-        service.createBarOwner(request)
+        val request = CreateCafeOwnerRequest(cafeId = 1L, name = "Owner", phoneNumber = "010", email = "o@t.com", password = "raw123")
+        service.createCafeOwner(request)
 
-        verify { barOwnerRepo.save(match { passwordEncoder.matches("raw123", it.password) }) }
+        verify { cafeOwnerRepo.save(match { passwordEncoder.matches("raw123", it.password) }) }
+    }
+
+    @Test
+    fun `createOrganizer should save organizer`() {
+        every { organizerRepo.save(any()) } answers { firstArg<Organizer>() }
+
+        val request = CreateOrganizerRequest(name = "Org", phoneNumber = "010", email = "org@t.com", password = "pass123")
+        val result = service.createOrganizer(request)
+        assertEquals("Org", result.name)
     }
 }

@@ -232,14 +232,14 @@ backend/src/test/kotlin/com/blinddate/
 - Modify: `backend/src/main/resources/application-local.yml`
 - Modify: `backend/src/main/resources/application-test.yml`
 
-- [ ] **Step 1: 기존 소스코드 삭제**
+- [x] **Step 1: 기존 소스코드 삭제**
 
 ```bash
 rm -rf backend/src/main/kotlin/com/blinddate/*
 rm -rf backend/src/test/kotlin/com/blinddate/*
 ```
 
-- [ ] **Step 2: Application 진입점 생성**
+- [x] **Step 2: Application 진입점 생성**
 
 ```kotlin
 // BlindDateApplication.kt
@@ -258,7 +258,7 @@ fun main(args: Array<String>) {
 }
 ```
 
-- [ ] **Step 3: BaseEntity 생성**
+- [x] **Step 3: BaseEntity 생성**
 
 ```kotlin
 // common/entity/BaseEntity.kt
@@ -287,7 +287,7 @@ abstract class BaseEntity {
 }
 ```
 
-- [ ] **Step 4: 예외 클래스 + 글로벌 핸들러 생성**
+- [x] **Step 4: 예외 클래스 + 글로벌 핸들러 생성**
 
 ```kotlin
 // common/exception/Exceptions.kt
@@ -319,7 +319,7 @@ class GlobalExceptionHandler {
 }
 ```
 
-- [ ] **Step 5: JpaConfig, RedisConfig, CursorPageResponse 생성**
+- [x] **Step 5: JpaConfig, RedisConfig, CursorPageResponse 생성**
 
 ```kotlin
 // common/config/JpaConfig.kt
@@ -366,16 +366,16 @@ data class CursorPageResponse<T>(
 )
 ```
 
-- [ ] **Step 6: application 설정 파일 업데이트**
+- [x] **Step 6: application 설정 파일 업데이트**
 
 `application.yml`은 기존 유지. `application-local.yml`에서 `jpa.hibernate.ddl-auto: update`로 초기 개발.
 
-- [ ] **Step 7: 빌드 확인**
+- [x] **Step 7: 빌드 확인**
 
 Run: `cd backend && ./gradlew compileKotlin`
 Expected: BUILD SUCCESSFUL
 
-- [ ] **Step 8: 커밋**
+- [x] **Step 8: 커밋**
 
 ```bash
 git add -A && git commit -m "feat: clean slate with common infrastructure (BaseEntity, exceptions, configs)"
@@ -402,7 +402,7 @@ git add -A && git commit -m "feat: clean slate with common infrastructure (BaseE
 - Create: `backend/src/main/kotlin/com/blinddate/admin/entity/PlatformAdmin.kt`
 - Create: `backend/src/main/kotlin/com/blinddate/admin/repository/PlatformAdminRepository.kt`
 
-- [ ] **Step 1: Enum 타입 생성**
+- [x] **Step 1: Enum 타입 생성**
 
 ```kotlin
 // participant/entity/Gender.kt
@@ -418,7 +418,7 @@ package com.blinddate.participant.entity
 enum class SmokingType { NONE, SOMETIMES, OFTEN }
 ```
 
-- [ ] **Step 2: Participant + ParticipantProfile 엔티티**
+- [x] **Step 2: Participant + ParticipantProfile 엔티티**
 
 ```kotlin
 // participant/entity/Participant.kt
@@ -474,7 +474,7 @@ class ParticipantProfile(
 ) : BaseEntity()
 ```
 
-- [ ] **Step 3: Bar 엔티티**
+- [x] **Step 3: Bar 엔티티**
 
 ```kotlin
 // bar/entity/Bar.kt
@@ -497,7 +497,7 @@ class Bar(
 ) : BaseEntity()
 ```
 
-- [ ] **Step 4: BarOwner 엔티티**
+- [x] **Step 4: BarOwner 엔티티**
 
 ```kotlin
 // barowner/entity/BarOwner.kt
@@ -523,7 +523,7 @@ class BarOwner(
 ) : BaseEntity()
 ```
 
-- [ ] **Step 5: PlatformAdmin 엔티티**
+- [x] **Step 5: PlatformAdmin 엔티티**
 
 ```kotlin
 // admin/entity/PlatformAdmin.kt
@@ -541,7 +541,7 @@ class PlatformAdmin(
 ) : BaseEntity()
 ```
 
-- [ ] **Step 6: Repository 인터페이스 생성**
+- [x] **Step 6: Repository 인터페이스 생성**
 
 ```kotlin
 // participant/repository/ParticipantRepository.kt
@@ -594,12 +594,12 @@ interface PlatformAdminRepository : JpaRepository<PlatformAdmin, Long> {
 }
 ```
 
-- [ ] **Step 7: 빌드 확인**
+- [x] **Step 7: 빌드 확인**
 
 Run: `cd backend && ./gradlew compileKotlin`
 Expected: BUILD SUCCESSFUL
 
-- [ ] **Step 8: 커밋**
+- [x] **Step 8: 커밋**
 
 ```bash
 git add -A && git commit -m "feat: add core entities (Participant, Bar, BarOwner, PlatformAdmin)"
@@ -619,7 +619,7 @@ git add -A && git commit -m "feat: add core entities (Participant, Bar, BarOwner
 - Create: `backend/src/main/kotlin/com/blinddate/common/config/SecurityConfig.kt`
 - Test: `backend/src/test/kotlin/com/blinddate/auth/jwt/JwtTokenProviderTest.kt`
 
-- [ ] **Step 1: UserType enum + UserPrincipal 생성**
+- [x] **Step 1: UserType enum + UserPrincipal 생성**
 
 ```kotlin
 // auth/jwt/UserType.kt
@@ -635,7 +635,7 @@ data class UserPrincipal(
 )
 ```
 
-- [ ] **Step 2: JwtTokenProvider 테스트 작성**
+- [x] **Step 2: JwtTokenProvider 테스트 작성**
 
 ```kotlin
 // test: auth/jwt/JwtTokenProviderTest.kt
@@ -689,12 +689,12 @@ class JwtTokenProviderTest {
 }
 ```
 
-- [ ] **Step 3: 테스트 실패 확인**
+- [x] **Step 3: 테스트 실패 확인**
 
 Run: `cd backend && ./gradlew test --tests "com.blinddate.auth.jwt.JwtTokenProviderTest"`
 Expected: FAIL (class not found)
 
-- [ ] **Step 4: JwtTokenProvider 구현**
+- [x] **Step 4: JwtTokenProvider 구현**
 
 ```kotlin
 // auth/jwt/JwtTokenProvider.kt
@@ -761,12 +761,12 @@ class JwtTokenProvider(
 }
 ```
 
-- [ ] **Step 5: 테스트 통과 확인**
+- [x] **Step 5: 테스트 통과 확인**
 
 Run: `cd backend && ./gradlew test --tests "com.blinddate.auth.jwt.JwtTokenProviderTest"`
 Expected: PASS (3 tests)
 
-- [ ] **Step 6: JwtAuthenticationFilter 구현**
+- [x] **Step 6: JwtAuthenticationFilter 구현**
 
 ```kotlin
 // auth/jwt/JwtAuthenticationFilter.kt
@@ -808,7 +808,7 @@ class JwtAuthenticationFilter(
 }
 ```
 
-- [ ] **Step 7: SecurityConfig 구현**
+- [x] **Step 7: SecurityConfig 구현**
 
 ```kotlin
 // common/config/SecurityConfig.kt
@@ -870,7 +870,7 @@ class SecurityConfig(private val jwtAuthenticationFilter: JwtAuthenticationFilte
 }
 ```
 
-- [ ] **Step 8: 커밋**
+- [x] **Step 8: 커밋**
 
 ```bash
 git add -A && git commit -m "feat: add JWT auth infrastructure with multi-user type support"
@@ -891,7 +891,7 @@ git add -A && git commit -m "feat: add JWT auth infrastructure with multi-user t
 - Create: `backend/src/main/kotlin/com/blinddate/admin/controller/AdminAuthController.kt`
 - Test: `backend/src/test/kotlin/com/blinddate/auth/service/AuthServiceTest.kt`
 
-- [ ] **Step 1: AuthDtos 생성**
+- [x] **Step 1: AuthDtos 생성**
 
 ```kotlin
 // auth/dto/AuthDtos.kt
@@ -903,7 +903,7 @@ data class TokenResponse(val accessToken: String, val refreshToken: String, val 
 data class RefreshRequest(val refreshToken: String)
 ```
 
-- [ ] **Step 2: BarOwnerAuthService 테스트 작성**
+- [x] **Step 2: BarOwnerAuthService 테스트 작성**
 
 ```kotlin
 // test: auth/service/BarOwnerAuthServiceTest.kt
@@ -962,12 +962,12 @@ class BarOwnerAuthServiceTest {
 }
 ```
 
-- [ ] **Step 3: 테스트 실패 확인**
+- [x] **Step 3: 테스트 실패 확인**
 
 Run: `cd backend && ./gradlew test --tests "com.blinddate.auth.service.BarOwnerAuthServiceTest"`
 Expected: FAIL
 
-- [ ] **Step 4: KakaoOAuthService 구현**
+- [x] **Step 4: KakaoOAuthService 구현**
 
 ```kotlin
 // auth/service/KakaoOAuthService.kt
@@ -1011,7 +1011,7 @@ class KakaoOAuthService(
 }
 ```
 
-- [ ] **Step 5: 3개 AuthService 구현 (각 사용자 유형별 분리)**
+- [x] **Step 5: 3개 AuthService 구현 (각 사용자 유형별 분리)**
 
 ```kotlin
 // auth/service/ParticipantAuthService.kt
@@ -1126,12 +1126,12 @@ class AdminAuthService(
 }
 ```
 
-- [ ] **Step 6: 테스트 통과 확인**
+- [x] **Step 6: 테스트 통과 확인**
 
 Run: `cd backend && ./gradlew test --tests "com.blinddate.auth.service.BarOwnerAuthServiceTest"`
 Expected: PASS
 
-- [ ] **Step 7: 컨트롤러 생성 (Auth, BarOwnerAuth, AdminAuth)**
+- [x] **Step 7: 컨트롤러 생성 (Auth, BarOwnerAuth, AdminAuth)**
 
 ```kotlin
 // auth/controller/AuthController.kt
@@ -1187,7 +1187,7 @@ class AdminAuthController(private val adminAuthService: AdminAuthService) {
 }
 ```
 
-- [ ] **Step 8: 커밋**
+- [x] **Step 8: 커밋**
 
 ```bash
 git add -A && git commit -m "feat: add auth endpoints (Kakao OAuth, BarOwner login, Admin login)"
@@ -1205,7 +1205,7 @@ git add -A && git commit -m "feat: add auth endpoints (Kakao OAuth, BarOwner log
 - Create: `backend/src/main/kotlin/com/blinddate/participant/controller/ParticipantController.kt`
 - Test: `backend/src/test/kotlin/com/blinddate/participant/service/ParticipantServiceTest.kt`
 
-- [ ] **Step 1: DTOs 생성**
+- [x] **Step 1: DTOs 생성**
 
 ```kotlin
 // participant/dto/ParticipantDtos.kt
@@ -1232,7 +1232,7 @@ data class ProfileResponse(
 )
 ```
 
-- [ ] **Step 2: 서비스 테스트 작성**
+- [x] **Step 2: 서비스 테스트 작성**
 
 ```kotlin
 // test: participant/service/ParticipantServiceTest.kt
@@ -1287,12 +1287,12 @@ class ParticipantServiceTest {
 }
 ```
 
-- [ ] **Step 3: 테스트 실패 확인**
+- [x] **Step 3: 테스트 실패 확인**
 
 Run: `cd backend && ./gradlew test --tests "com.blinddate.participant.service.ParticipantServiceTest"`
 Expected: FAIL
 
-- [ ] **Step 4: ParticipantService 구현**
+- [x] **Step 4: ParticipantService 구현**
 
 ```kotlin
 // participant/service/ParticipantService.kt
@@ -1356,12 +1356,12 @@ class ParticipantService(
 }
 ```
 
-- [ ] **Step 5: 테스트 통과 확인**
+- [x] **Step 5: 테스트 통과 확인**
 
 Run: `cd backend && ./gradlew test --tests "com.blinddate.participant.service.ParticipantServiceTest"`
 Expected: PASS
 
-- [ ] **Step 6: ParticipantController 구현**
+- [x] **Step 6: ParticipantController 구현**
 
 ```kotlin
 // participant/controller/ParticipantController.kt
@@ -1393,7 +1393,7 @@ class ParticipantController(private val service: ParticipantService) {
 }
 ```
 
-- [ ] **Step 7: 커밋**
+- [x] **Step 7: 커밋**
 
 ```bash
 git add -A && git commit -m "feat: add participant API (me, profile CRUD)"
@@ -1418,7 +1418,7 @@ Event 엔티티를 생성하고, 참가자가 바별 페이지에서 이벤트 �
 - Create: `backend/src/main/kotlin/com/blinddate/bar/controller/BarController.kt`
 - Test: `backend/src/test/kotlin/com/blinddate/event/service/EventServiceTest.kt`
 
-- [ ] **Step 1: Event 관련 엔티티/enum 생성**
+- [x] **Step 1: Event 관련 엔티티/enum 생성**
 
 ```kotlin
 // event/entity/EventStatus.kt
@@ -1475,7 +1475,7 @@ class Event(
 }
 ```
 
-- [ ] **Step 2: EventRepository + DTOs 생성**
+- [x] **Step 2: EventRepository + DTOs 생성**
 
 ```kotlin
 // event/repository/EventRepository.kt
@@ -1516,7 +1516,7 @@ data class EventCreateRequest(
 )
 ```
 
-- [ ] **Step 3: EventService 테스트 작성**
+- [x] **Step 3: EventService 테스트 작성**
 
 ```kotlin
 // test: event/service/EventServiceTest.kt
@@ -1554,7 +1554,7 @@ class EventServiceTest {
 }
 ```
 
-- [ ] **Step 4: 테스트 실패 확인 → EventService + BarService 구현 → 테스트 통과**
+- [x] **Step 4: 테스트 실패 확인 → EventService + BarService 구현 → 테스트 통과**
 
 Run: `cd backend && ./gradlew test --tests "com.blinddate.event.service.EventServiceTest"`
 
@@ -1637,7 +1637,7 @@ class BarController(private val barService: BarService, private val eventService
 }
 ```
 
-- [ ] **Step 5: 테스트 통과 확인 → 커밋**
+- [x] **Step 5: 테스트 통과 확인 → 커밋**
 
 Run: `cd backend && ./gradlew test --tests "com.blinddate.event.service.EventServiceTest"`
 Expected: PASS
@@ -1659,7 +1659,7 @@ git add -A && git commit -m "feat: add Event entity and public bar/event APIs"
 - Create: `backend/src/main/kotlin/com/blinddate/barowner/controller/BarOwnerEventController.kt`
 - Test: `backend/src/test/kotlin/com/blinddate/barowner/service/BarOwnerServiceTest.kt`
 
-- [ ] **Step 1: BarOwnerDtos 생성**
+- [x] **Step 1: BarOwnerDtos 생성**
 
 ```kotlin
 // barowner/dto/BarOwnerDtos.kt
@@ -1670,9 +1670,9 @@ data class EventStatsResponse(
 )
 ```
 
-- [ ] **Step 2: BarOwnerService 테스트 작성 (이벤트 CRUD: 생성, 수정, 삭제, 타 바 이벤트 접근 거부)**
-- [ ] **Step 3: 테스트 실패 확인**
-- [ ] **Step 4: BarOwnerService 구현**
+- [x] **Step 2: BarOwnerService 테스트 작성 (이벤트 CRUD: 생성, 수정, 삭제, 타 바 이벤트 접근 거부)**
+- [x] **Step 3: 테스트 실패 확인**
+- [x] **Step 4: BarOwnerService 구현**
 
 핵심 로직:
 - 모든 이벤트 조작 시 `event.bar.id == principal.barId` 검증
@@ -1683,8 +1683,8 @@ data class EventStatsResponse(
 - `getEventStats`: 참가자 수, 매칭 수 통계
 - `getMyCommissions`: 내 바의 수수료 내역 조회
 
-- [ ] **Step 5: 테스트 통과 확인**
-- [ ] **Step 6: 컨트롤러 구현**
+- [x] **Step 5: 테스트 통과 확인**
+- [x] **Step 6: 컨트롤러 구현**
 
 ```kotlin
 // BarOwnerBarController: GET/PUT /api/bar-owner/my-bar
@@ -1693,7 +1693,7 @@ data class EventStatsResponse(
 //   + GET /api/bar-owner/commissions
 ```
 
-- [ ] **Step 7: 커밋**
+- [x] **Step 7: 커밋**
 
 ```bash
 git commit -m "feat: add BarOwner event CRUD, bar management, stats, and commissions APIs"
@@ -1714,7 +1714,7 @@ git commit -m "feat: add BarOwner event CRUD, bar management, stats, and commiss
 - Create: `backend/src/main/kotlin/com/blinddate/application/controller/ApplicationController.kt`
 - Test: `backend/src/test/kotlin/com/blinddate/application/service/ApplicationServiceTest.kt`
 
-- [ ] **Step 1: ApplicationStatus enum + Application 엔티티**
+- [x] **Step 1: ApplicationStatus enum + Application 엔티티**
 
 ```kotlin
 // application/entity/ApplicationStatus.kt
@@ -1756,10 +1756,10 @@ class Application(
 ) : BaseEntity()
 ```
 
-- [ ] **Step 2: Repository + DTOs**
-- [ ] **Step 3: ApplicationService 테스트 작성 (신청: 정상, 중복신청 에러, OPEN이 아닌 이벤트 에러, 나이제한 에러)**
-- [ ] **Step 4: 테스트 실패 확인**
-- [ ] **Step 5: ApplicationService 구현 (apply, cancel, getMyApplications)**
+- [x] **Step 2: Repository + DTOs**
+- [x] **Step 3: ApplicationService 테스트 작성 (신청: 정상, 중복신청 에러, OPEN이 아닌 이벤트 에러, 나이제한 에러)**
+- [x] **Step 4: 테스트 실패 확인**
+- [x] **Step 5: ApplicationService 구현 (apply, cancel, getMyApplications)**
 
 핵심 로직:
 - 프로필 필수 검증
@@ -1768,8 +1768,8 @@ class Application(
 - 중복 신청 방지 (unique constraint)
 - 취소는 PENDING 상태만 가능
 
-- [ ] **Step 6: 테스트 통과 확인**
-- [ ] **Step 7: ApplicationController 구현**
+- [x] **Step 6: 테스트 통과 확인**
+- [x] **Step 7: ApplicationController 구현**
 
 ```kotlin
 // POST /api/events/{id}/apply
@@ -1777,7 +1777,7 @@ class Application(
 // GET /api/me/applications
 ```
 
-- [ ] **Step 8: 커밋**
+- [x] **Step 8: 커밋**
 
 ```bash
 git commit -m "feat: add application flow (participant apply/cancel)"
@@ -1794,9 +1794,9 @@ git commit -m "feat: add application flow (participant apply/cancel)"
 - Modify: `backend/src/main/kotlin/com/blinddate/application/service/ApplicationService.kt`
 - Test: 기존 ApplicationServiceTest에 추가
 
-- [ ] **Step 1: 승인/거절 테스트 작성 (승인→카운트 증가, 정원 초과 에러, 거절)**
-- [ ] **Step 2: 테스트 실패 확인**
-- [ ] **Step 3: ApplicationService에 approve/reject 구현**
+- [x] **Step 1: 승인/거절 테스트 작성 (승인→카운트 증가, 정원 초과 에러, 거절)**
+- [x] **Step 2: 테스트 실패 확인**
+- [x] **Step 3: ApplicationService에 approve/reject 구현**
 
 핵심 로직:
 - 승인 시 PENDING → APPROVED, 해당 성별 카운트 증가
@@ -1804,9 +1804,9 @@ git commit -m "feat: add application flow (participant apply/cancel)"
 - 거절 시 PENDING → REJECTED (카운트 변동 없음)
 - barOwnerId로 해당 바의 이벤트인지 검증
 
-- [ ] **Step 4: 테스트 통과 확인**
-- [ ] **Step 5: BarOwnerApplicationController 구현**
-- [ ] **Step 6: 커밋**
+- [x] **Step 4: 테스트 통과 확인**
+- [x] **Step 5: BarOwnerApplicationController 구현**
+- [x] **Step 6: 커밋**
 
 ```bash
 git commit -m "feat: add BarOwner application management (approve/reject with capacity)"
@@ -1830,19 +1830,19 @@ git commit -m "feat: add BarOwner application management (approve/reject with ca
 - Test: `backend/src/test/kotlin/com/blinddate/matching/service/ParticipantNumberServiceTest.kt`
 - Test: `backend/src/test/kotlin/com/blinddate/matching/service/MatchingServiceTest.kt`
 
-- [ ] **Step 1: ParticipantNumber + Choice 엔티티**
-- [ ] **Step 2: ParticipantNumberService 테스트 (번호 부여: 남녀 분리, 순차)**
-- [ ] **Step 3: 테스트 실패 확인 → 구현 → 통과**
-- [ ] **Step 4: MatchingService 테스트 (선택 제출: 정상, maxChoices 초과, 마감 후 에러, 이성만 선택 가능)**
-- [ ] **Step 5: 테스트 실패 확인 → 구현 → 통과**
+- [x] **Step 1: ParticipantNumber + Choice 엔티티**
+- [x] **Step 2: ParticipantNumberService 테스트 (번호 부여: 남녀 분리, 순차)**
+- [x] **Step 3: 테스트 실패 확인 → 구현 → 통과**
+- [x] **Step 4: MatchingService 테스트 (선택 제출: 정상, maxChoices 초과, 마감 후 에러, 이성만 선택 가능)**
+- [x] **Step 5: 테스트 실패 확인 → 구현 → 통과**
 
 핵심 로직:
 - `getParticipants`: 이성 참가번호 + 나이/직업/한줄소개 반환
 - `submitChoices`: choiceDeadline 검증, maxChoices 검증, 이성 검증
 - `updateChoices`: 기존 선택 삭제 후 재저장
 
-- [ ] **Step 6: MatchingController 구현**
-- [ ] **Step 7: 커밋**
+- [x] **Step 6: MatchingController 구현**
+- [x] **Step 7: 커밋**
 
 ```bash
 git commit -m "feat: add participant numbers and choice submission"
@@ -1860,8 +1860,8 @@ git commit -m "feat: add participant numbers and choice submission"
 - Modify: `backend/src/main/kotlin/com/blinddate/matching/service/MatchingService.kt`
 - Modify: `backend/src/main/kotlin/com/blinddate/matching/controller/MatchingController.kt`
 
-- [ ] **Step 1: MatchResult 엔티티 + Repository**
-- [ ] **Step 2: 매칭 알고리즘 테스트 (상호 선택→매칭, 일방 선택→미매칭, 중복 매칭 방지)**
+- [x] **Step 1: MatchResult 엔티티 + Repository**
+- [x] **Step 2: 매칭 알고리즘 테스트 (상호 선택→매칭, 일방 선택→미매칭, 중복 매칭 방지)**
 
 ```kotlin
 @Test
@@ -1871,10 +1871,10 @@ fun `processMatching should match bidirectional choices`() {
 }
 ```
 
-- [ ] **Step 3: 테스트 실패 확인 → processMatching 구현 → 통과**
-- [ ] **Step 4: getMatchResult 구현 (매칭 결과 + 상대 닉네임)**
-- [ ] **Step 5: 컨트롤러에 `GET /api/events/{id}/result` 추가**
-- [ ] **Step 6: 커밋**
+- [x] **Step 3: 테스트 실패 확인 → processMatching 구현 → 통과**
+- [x] **Step 4: getMatchResult 구현 (매칭 결과 + 상대 닉네임)**
+- [x] **Step 5: 컨트롤러에 `GET /api/events/{id}/result` 추가**
+- [x] **Step 6: 커밋**
 
 ```bash
 git commit -m "feat: add bidirectional matching algorithm and result query"
@@ -1896,7 +1896,7 @@ git commit -m "feat: add bidirectional matching algorithm and result query"
 - Create: `backend/src/main/kotlin/com/blinddate/notification/controller/NotificationController.kt`
 - Test: `backend/src/test/kotlin/com/blinddate/notification/service/NotificationServiceTest.kt`
 
-- [ ] **Step 1: Enum + Notification 엔티티**
+- [x] **Step 1: Enum + Notification 엔티티**
 
 ```kotlin
 // notification/entity/RecipientType.kt
@@ -1929,10 +1929,10 @@ class Notification(
 ) : BaseEntity()
 ```
 
-- [ ] **Step 2: Repository + DTOs + 테스트 작성**
-- [ ] **Step 3: 테스트 실패 → NotificationService 구현 (send, getNotifications, markAsRead, getUnreadCount) → 통과**
-- [ ] **Step 4: NotificationController 구현**
-- [ ] **Step 5: 커밋**
+- [x] **Step 2: Repository + DTOs + 테스트 작성**
+- [x] **Step 3: 테스트 실패 → NotificationService 구현 (send, getNotifications, markAsRead, getUnreadCount) → 통과**
+- [x] **Step 4: NotificationController 구현**
+- [x] **Step 5: 커밋**
 
 ```bash
 git commit -m "feat: add notification system (DB storage and retrieval)"
@@ -1952,7 +1952,7 @@ git commit -m "feat: add notification system (DB storage and retrieval)"
 - Create: `backend/src/main/kotlin/com/blinddate/action/controller/ActionController.kt`
 - Test: `backend/src/test/kotlin/com/blinddate/action/service/ActionTokenServiceTest.kt`
 
-- [ ] **Step 1: ActionToken 엔티티**
+- [x] **Step 1: ActionToken 엔티티**
 
 ```kotlin
 // action/entity/ActionToken.kt
@@ -1979,16 +1979,16 @@ class ActionToken(
 }
 ```
 
-- [ ] **Step 2: 테스트 작성 (토큰 생성, 실행, 만료 토큰 거부, 사용 완료 토큰 거부)**
-- [ ] **Step 3: 테스트 실패 → ActionTokenService 구현 → 통과**
+- [x] **Step 2: 테스트 작성 (토큰 생성, 실행, 만료 토큰 거부, 사용 완료 토큰 거부)**
+- [x] **Step 3: 테스트 실패 → ActionTokenService 구현 → 통과**
 
 핵심 로직:
 - `createToken`: 토큰 생성 + DB 저장
 - `executeAction`: 유효성 검증 → ApplicationService.approve/reject 호출 → used=true (atomic)
 - UUID v4 토큰, 24시간 만료, 1회용
 
-- [ ] **Step 4: ActionController 구현 (`GET/POST /api/actions/{token}`)**
-- [ ] **Step 5: 커밋**
+- [x] **Step 4: ActionController 구현 (`GET/POST /api/actions/{token}`)**
+- [x] **Step 5: 커밋**
 
 ```bash
 git commit -m "feat: add ActionToken system for KakaoTalk button actions"
@@ -2008,7 +2008,7 @@ git commit -m "feat: add ActionToken system for KakaoTalk button actions"
 - Create: `backend/src/main/kotlin/com/blinddate/commission/service/CommissionService.kt`
 - Test: `backend/src/test/kotlin/com/blinddate/commission/service/CommissionServiceTest.kt`
 
-- [ ] **Step 1: Commission 엔티티 + enum + repository**
+- [x] **Step 1: Commission 엔티티 + enum + repository**
 
 ```kotlin
 // commission/entity/CommissionStatus.kt
@@ -2041,15 +2041,15 @@ class Commission(
 ) : BaseEntity()
 ```
 
-- [ ] **Step 2: 테스트 (자동 생성: 참가자 수 × 단가 계산, 청구 상태 전환, 입금 확인)**
-- [ ] **Step 3: 테스트 실패 → CommissionService 구현 → 통과**
+- [x] **Step 2: 테스트 (자동 생성: 참가자 수 × 단가 계산, 청구 상태 전환, 입금 확인)**
+- [x] **Step 3: 테스트 실패 → CommissionService 구현 → 통과**
 
 핵심 로직:
 - `createForEvent(eventId)`: APPROVED 이상 참가자 수 계산 → unitPrice = eventPrice * commissionRate / 100 → 저장
 - `invoice(commissionId)`: PENDING → INVOICED
 - `markPaid(commissionId)`: INVOICED → PAID
 
-- [ ] **Step 4: 커밋**
+- [x] **Step 4: 커밋**
 
 ```bash
 git commit -m "feat: add commission system (auto-creation, invoice, payment tracking)"
@@ -2069,13 +2069,13 @@ git commit -m "feat: add commission system (auto-creation, invoice, payment trac
 - Create: `backend/src/main/kotlin/com/blinddate/admin/controller/AdminDashboardController.kt`
 - Test: `backend/src/test/kotlin/com/blinddate/admin/service/AdminServiceTest.kt`
 
-- [ ] **Step 1: AdminDtos + 테스트**
+- [x] **Step 1: AdminDtos + 테스트**
 
 ```kotlin
 // admin/dto/AdminDtos.kt - 바 등록 요청, 사장님 계정 생성 요청, 대시보드 응답 등
 ```
 
-- [ ] **Step 2: AdminService 구현**
+- [x] **Step 2: AdminService 구현**
 
 핵심 기능:
 - `createBar(request)`: Bar 엔티티 생성 (slug 중복 검증)
@@ -2083,9 +2083,9 @@ git commit -m "feat: add commission system (auto-creation, invoice, payment trac
 - `getBars()`: 바 목록
 - `getDashboard()`: 전체 바 수, 이벤트 수, 참가자 수, 수수료 현황
 
-- [ ] **Step 3: 테스트 통과 확인**
-- [ ] **Step 4: 컨트롤러 3개 구현**
-- [ ] **Step 5: 커밋**
+- [x] **Step 3: 테스트 통과 확인**
+- [x] **Step 4: 컨트롤러 3개 구현**
+- [x] **Step 5: 커밋**
 
 ```bash
 git commit -m "feat: add platform admin APIs (bar registration, commission, dashboard)"
@@ -2104,7 +2104,7 @@ git commit -m "feat: add platform admin APIs (bar registration, commission, dash
 - Test: `backend/src/test/kotlin/com/blinddate/scheduler/EventStatusSchedulerTest.kt`
 - Test: `backend/src/test/kotlin/com/blinddate/scheduler/MatchingSchedulerTest.kt`
 
-- [ ] **Step 1: EventStatusScheduler 테스트**
+- [x] **Step 1: EventStatusScheduler 테스트**
 
 ```kotlin
 @Test
@@ -2114,7 +2114,7 @@ fun `should transition OPEN to CLOSED when choiceDeadline passed`() { ... }
 fun `should assign participant numbers on CLOSED transition`() { ... }
 ```
 
-- [ ] **Step 2: 테스트 실패 → EventStatusScheduler 구현 → 통과**
+- [x] **Step 2: 테스트 실패 → EventStatusScheduler 구현 → 통과**
 
 핵심 로직:
 - 매분 실행: OPEN 이벤트 중 choiceDeadline 지난 것 → CLOSED + 참가번호 부여
@@ -2122,7 +2122,7 @@ fun `should assign participant numbers on CLOSED transition`() { ... }
 - matchNotificationTime 도달한 CLOSED 이벤트 → 매칭 처리 + 알림 발송 → COMPLETED + Commission 생성
 - 시간 흐름: choiceDeadline(선택 마감) → [참가자 선택 기간] → matchNotificationTime(매칭 실행)
 
-- [ ] **Step 3: MatchingScheduler 테스트**
+- [x] **Step 3: MatchingScheduler 테스트**
 
 ```kotlin
 @Test
@@ -2135,9 +2135,9 @@ fun `should send notifications when matchNotificationTime passed`() { ... }
 fun `should notify unmatched participants`() { ... }
 ```
 
-- [ ] **Step 4: 테스트 실패 → MatchingScheduler 구현 → 통과**
-- [ ] **Step 5: ReminderScheduler 구현 (이벤트 전날 리마인더)**
-- [ ] **Step 6: 커밋**
+- [x] **Step 4: 테스트 실패 → MatchingScheduler 구현 → 통과**
+- [x] **Step 5: ReminderScheduler 구현 (이벤트 전날 리마인더)**
+- [x] **Step 6: 커밋**
 
 ```bash
 git commit -m "feat: add schedulers (event status, matching, reminder)"
@@ -2154,16 +2154,16 @@ git commit -m "feat: add schedulers (event status, matching, reminder)"
 - Modify: `backend/src/main/kotlin/com/blinddate/notification/service/NotificationService.kt`
 - Modify: `backend/src/main/resources/application-local.yml` (카카오 채널 설정 추가)
 
-- [ ] **Step 1: KakaoChannelMessageService 구현**
+- [x] **Step 1: KakaoChannelMessageService 구현**
 
 ```kotlin
 // 카카오 채널 메시지 API 호출 (WebClient)
 // 실패 시 로그만 남기고 진행 (알림 DB 저장은 이미 완료)
 ```
 
-- [ ] **Step 2: NotificationService.send()에서 KakaoChannelMessageService 호출 추가**
-- [ ] **Step 3: 바 사장님 알림에 ActionToken URL 버튼 포함**
-- [ ] **Step 4: 커밋**
+- [x] **Step 2: NotificationService.send()에서 KakaoChannelMessageService 호출 추가**
+- [x] **Step 3: 바 사장님 알림에 ActionToken URL 버튼 포함**
+- [x] **Step 4: 커밋**
 
 ```bash
 git commit -m "feat: integrate Kakao channel message API for notifications"
@@ -2179,9 +2179,9 @@ git commit -m "feat: integrate Kakao channel message API for notifications"
 - Create: `backend/src/main/kotlin/com/blinddate/common/service/S3Service.kt`
 - Create: `backend/src/main/kotlin/com/blinddate/common/controller/UploadController.kt`
 
-- [ ] **Step 1: S3Service 구현 (presigned URL 생성)**
-- [ ] **Step 2: UploadController 구현 (`POST /api/upload/presigned-url`)**
-- [ ] **Step 3: 커밋**
+- [x] **Step 1: S3Service 구현 (presigned URL 생성)**
+- [x] **Step 2: UploadController 구현 (`POST /api/upload/presigned-url`)**
+- [x] **Step 3: 커밋**
 
 ```bash
 git commit -m "feat: add S3 presigned URL upload endpoint"
@@ -2193,19 +2193,19 @@ git commit -m "feat: add S3 presigned URL upload endpoint"
 
 빌드, 전체 테스트 실행, 코드 정리를 수행한다.
 
-- [ ] **Step 1: 전체 빌드 확인**
+- [x] **Step 1: 전체 빌드 확인**
 
 Run: `cd backend && ./gradlew build`
 Expected: BUILD SUCCESSFUL
 
-- [ ] **Step 2: 전체 테스트 실행**
+- [x] **Step 2: 전체 테스트 실행**
 
 Run: `cd backend && ./gradlew test`
 Expected: 모든 테스트 PASS
 
-- [ ] **Step 3: application 설정 파일 정리 (local/test 환경 분리 확인)**
-- [ ] **Step 4: docker-compose.yml 업데이트 (불필요한 환경변수 제거)**
-- [ ] **Step 5: 최종 커밋**
+- [x] **Step 3: application 설정 파일 정리 (local/test 환경 분리 확인)**
+- [x] **Step 4: docker-compose.yml 업데이트 (불필요한 환경변수 제거)**
+- [x] **Step 5: 최종 커밋**
 
 ```bash
 git commit -m "chore: cleanup and verify all tests pass"

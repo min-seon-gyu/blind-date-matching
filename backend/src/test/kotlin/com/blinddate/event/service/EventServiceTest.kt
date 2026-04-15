@@ -1,11 +1,12 @@
 package com.blinddate.event.service
 
-import com.blinddate.bar.entity.Bar
-import com.blinddate.bar.repository.BarRepository
+import com.blinddate.cafe.entity.Cafe
+import com.blinddate.cafe.repository.CafeRepository
 import com.blinddate.common.exception.NotFoundException
 import com.blinddate.event.entity.Event
 import com.blinddate.event.entity.EventStatus
 import com.blinddate.event.repository.EventRepository
+import com.blinddate.organizer.entity.Organizer
 import io.mockk.*
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
@@ -16,33 +17,35 @@ import java.util.Optional
 
 class EventServiceTest {
     private val eventRepo = mockk<EventRepository>()
-    private val barRepo = mockk<BarRepository>()
-    private val service = EventService(eventRepo, barRepo)
+    private val cafeRepo = mockk<CafeRepository>()
+    private val service = EventService(eventRepo, cafeRepo)
+
+    private val organizer = Organizer(name = "Org", phoneNumber = "010", email = "org@test.com", password = "pass")
 
     @Test
-    fun `getEventsByBar should return events for given bar slug`() {
-        val bar = Bar(name = "Test", address = "addr", slug = "test-bar")
-        val event = Event(bar = bar, title = "Friday", date = LocalDate.of(2026, 4, 1),
+    fun `getEventsByCafe should return events for given cafe slug`() {
+        val cafe = Cafe(name = "Test", address = "addr", slug = "test-cafe")
+        val event = Event(cafe = cafe, organizer = organizer, title = "Friday", date = LocalDate.of(2026, 4, 1),
             time = LocalTime.of(19, 0), price = 30000, maleCapacity = 10, femaleCapacity = 10)
 
-        every { barRepo.findBySlug("test-bar") } returns Optional.of(bar)
-        every { eventRepo.findByBarIdAndDeletedAtIsNullOrderByDateAsc(bar.id) } returns listOf(event)
+        every { cafeRepo.findBySlug("test-cafe") } returns cafe
+        every { eventRepo.findByCafeIdAndDeletedAtIsNull(cafe.id) } returns listOf(event)
 
-        val result = service.getEventsByBar("test-bar")
+        val result = service.getEventsByCafe("test-cafe")
         assertEquals(1, result.size)
         assertEquals("Friday", result[0].title)
     }
 
     @Test
-    fun `getEventsByBar should throw for unknown slug`() {
-        every { barRepo.findBySlug("unknown") } returns Optional.empty()
-        assertThrows(NotFoundException::class.java) { service.getEventsByBar("unknown") }
+    fun `getEventsByCafe should throw for unknown slug`() {
+        every { cafeRepo.findBySlug("unknown") } returns null
+        assertThrows(NotFoundException::class.java) { service.getEventsByCafe("unknown") }
     }
 
     @Test
     fun `getEvent should throw for deleted event`() {
-        val bar = Bar(name = "Test", address = "addr", slug = "test-bar")
-        val event = Event(bar = bar, title = "Old", date = LocalDate.of(2026, 4, 1),
+        val cafe = Cafe(name = "Test", address = "addr", slug = "test-cafe")
+        val event = Event(cafe = cafe, organizer = organizer, title = "Old", date = LocalDate.of(2026, 4, 1),
             time = LocalTime.of(19, 0), price = 30000, maleCapacity = 10, femaleCapacity = 10,
             deletedAt = LocalDateTime.now())
         every { eventRepo.findById(1L) } returns Optional.of(event)
@@ -50,15 +53,15 @@ class EventServiceTest {
     }
 
     @Test
-    fun `getEventByBarSlugAndId should validate bar ownership`() {
-        val bar = Bar(name = "Test", address = "addr", slug = "test-bar")
-        val otherBar = Bar(name = "Other", address = "addr2", slug = "other-bar")
-        val event = Event(bar = otherBar, title = "Friday", date = LocalDate.of(2026, 4, 1),
+    fun `getEventByCafeSlugAndId should validate cafe ownership`() {
+        val cafe = Cafe(name = "Test", address = "addr", slug = "test-cafe")
+        val otherCafe = Cafe(name = "Other", address = "addr2", slug = "other-cafe")
+        val event = Event(cafe = otherCafe, organizer = organizer, title = "Friday", date = LocalDate.of(2026, 4, 1),
             time = LocalTime.of(19, 0), price = 30000, maleCapacity = 10, femaleCapacity = 10)
 
-        every { barRepo.findBySlug("test-bar") } returns Optional.of(bar)
+        every { cafeRepo.findBySlug("test-cafe") } returns cafe
         every { eventRepo.findById(1L) } returns Optional.of(event)
 
-        assertThrows(NotFoundException::class.java) { service.getEventByBarSlugAndId("test-bar", 1L) }
+        assertThrows(NotFoundException::class.java) { service.getEventByCafeSlugAndId("test-cafe", 1L) }
     }
 }

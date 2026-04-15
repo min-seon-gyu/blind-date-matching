@@ -23,16 +23,34 @@ class JwtTokenProviderTest {
         val principal = provider.getUserPrincipal(token)
         assertEquals(1L, principal.id)
         assertEquals(UserType.PARTICIPANT, principal.userType)
-        assertNull(principal.barId)
+        assertNull(principal.cafeId)
     }
 
     @Test
-    fun `should create bar owner token with barId`() {
-        val token = provider.createAccessToken(2L, UserType.BAR_OWNER, barId = 10L)
+    fun `should create cafe owner token with cafeId`() {
+        val token = provider.createAccessToken(2L, UserType.CAFE_OWNER, cafeId = 10L)
+        val principal = provider.getUserPrincipal(token)
+        assertEquals(2L, principal.id)
+        assertEquals(UserType.CAFE_OWNER, principal.userType)
+        assertEquals(10L, principal.cafeId)
+    }
+
+    @Test
+    fun `should create organizer token without cafeId`() {
+        val token = provider.createAccessToken(3L, UserType.ORGANIZER)
+        val principal = provider.getUserPrincipal(token)
+        assertEquals(3L, principal.id)
+        assertEquals(UserType.ORGANIZER, principal.userType)
+        assertNull(principal.cafeId)
+    }
+
+    @Test
+    fun `should create bar owner token with cafeId`() {
+        val token = provider.createAccessToken(2L, UserType.BAR_OWNER, cafeId = 10L)
         val principal = provider.getUserPrincipal(token)
         assertEquals(2L, principal.id)
         assertEquals(UserType.BAR_OWNER, principal.userType)
-        assertEquals(10L, principal.barId)
+        assertEquals(10L, principal.cafeId)
     }
 
     @Test
